@@ -28,7 +28,7 @@ export async function GET(request: Request) {
   const title = searchParams.get("title");
   const text = title
     ? `Mistral Thing • ${title}`
-    : "Mistral Thing • Chat with Mistral AI";
+    : "Mistral Thing • Chat with Mistral";
 
   return new ImageResponse(
     <div
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
       <img
         alt="Mistral Thing logo"
         height={80}
-        src={`${getUrl()}/icon.svg`}
+        src={`${getUrl()}/icon-white.svg`}
         style={{
           position: "absolute",
           bottom: "40px",
