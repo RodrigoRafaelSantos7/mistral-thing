@@ -49,11 +49,6 @@ export const metadata: Metadata = {
     images: [siteConfig.ogImage],
     creator: "@rrcssantosdev",
   },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
-  },
   robots: {
     index: true,
     follow: true,
@@ -61,7 +56,6 @@ export const metadata: Metadata = {
     "max-image-preview": "large",
     "max-snippet": -1,
   },
-  manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
 export default function RootLayout({
