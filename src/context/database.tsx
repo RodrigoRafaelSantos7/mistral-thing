@@ -36,7 +36,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 
   if (isLoading || !isAuthenticated || !convexClient) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
         <Spinner />
       </div>
     );

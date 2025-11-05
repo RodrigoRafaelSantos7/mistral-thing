@@ -1,7 +1,8 @@
 "use client";
 
 import { MoonIcon, PaintBucket, SunIcon } from "lucide-react";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -28,8 +29,18 @@ import { useSettings } from "@/hooks/use-database";
 import { cn } from "@/lib/utils";
 
 export function ThemeSelector() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const { settings, updateSettings } = useSettings();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <Skeleton className="size-4" />;
+  }
 
   if (!settings) {
     return <Skeleton className="size-4" />;
@@ -59,6 +70,7 @@ export function ThemeSelector() {
                 <CommandItem
                   className="data-[selected=true]:bg-foreground/10 data-[selected=true]:text-foreground"
                   onSelect={() => {
+                    setTheme(`${settings.theme}-light`);
                     updateSettings({
                       mode: "light",
                     });
@@ -77,6 +89,7 @@ export function ThemeSelector() {
                 <CommandItem
                   className="data-[selected=true]:bg-foreground/10 data-[selected=true]:text-foreground"
                   onSelect={() => {
+                    setTheme(`${settings.theme}-dark`);
                     updateSettings({
                       mode: "dark",
                     });
@@ -100,6 +113,7 @@ export function ThemeSelector() {
                     className="data-[selected=true]:bg-foreground/10 data-[selected=true]:text-foreground"
                     key={themeOption.value}
                     onSelect={() => {
+                      setTheme(`${themeOption.value}-${mode}`);
                       updateSettings({
                         theme: themeOption.value,
                       });

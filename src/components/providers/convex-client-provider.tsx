@@ -8,7 +8,6 @@ import { env } from "@/lib/env";
 
 const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL, {
   expectAuth: true,
-  verbose: true,
 });
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
