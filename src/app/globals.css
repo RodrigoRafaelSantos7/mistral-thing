@@ -112,6 +112,10 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+body {
+  font-family: var(--font-geist-sans);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
