@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
+import { toast } from "sonner";
 import ModelIcon from "@/components/app/model-icon";
 import { Badge } from "@/components/ui/badge";
 import { CapabilityBadges } from "@/components/ui/capability-badges";
@@ -22,7 +23,11 @@ const Page = () => {
   const currentPinned = settings.pinnedModels || [];
   const activeModelCount = currentPinned.length;
 
-  const handleModelToggle = (model: Model, isEnabled: boolean) => {
+  const handleModelToggle = (
+    model: Model,
+    name: string,
+    isEnabled: boolean
+  ) => {
     let updatedPinned: Model[] = [];
 
     if (isEnabled) {
@@ -37,6 +42,8 @@ const Page = () => {
     updateSettings({
       pinnedModels: updatedPinned,
     });
+
+    toast.success(`${name} ${isEnabled ? "pinned" : "unpinned"}`);
   };
 
   return (
@@ -80,7 +87,7 @@ const Page = () => {
                       checked={isPinned}
                       disabled={isPinned && activeModelCount <= 1}
                       onCheckedChange={(checked) =>
-                        handleModelToggle(model.model, checked)
+                        handleModelToggle(model.model, model.name, checked)
                       }
                     />
                   </div>
