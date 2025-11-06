@@ -58,7 +58,6 @@ const AccountTabs = () => {
             <Link
               className={cn(
                 "flex items-center justify-start gap-2",
-                // TODO: Check if this is working properly
                 pathname === page.url &&
                   "border border-foreground/10 bg-muted/50"
               )}
