@@ -38,12 +38,8 @@ export function ThemeSelector() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <Skeleton className="size-4" />;
-  }
-
-  if (!settings) {
-    return <Skeleton className="size-4" />;
+  if (!(mounted && settings)) {
+    return <Skeleton className="size-9" />;
   }
 
   const mode = settings.mode ?? "dark";
