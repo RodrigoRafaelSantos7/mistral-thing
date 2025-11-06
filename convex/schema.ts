@@ -40,7 +40,16 @@ export const themes = v.union(
   v.literal("vercel")
 );
 
-const capabilities = v.union(v.literal("text-input"), v.literal("text-output"));
+const capabilities = v.union(
+  v.literal("text-input"),
+  v.literal("text-output"),
+  v.literal("image-input"),
+  v.literal("image-output"),
+  v.literal("voice-input"),
+  v.literal("voice-output"),
+  v.literal("audio-input"),
+  v.literal("audio-output")
+);
 
 const accesses = v.union(
   v.literal("public"),

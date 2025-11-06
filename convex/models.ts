@@ -42,6 +42,34 @@ export const seedModels = mutation({
         access: "premium-required" as const,
         credits: 1,
       },
+      {
+        name: "Mistral Medium 3.1",
+        model: "mistral-medium-latest" as const,
+        description:
+          "Mistral's frontier-class multimodal model released August 2025. Improving tone and performance.",
+        capabilities: [
+          "text-input" as const,
+          "image-input" as const,
+          "text-output" as const,
+        ],
+        icon: "medium" as const,
+        access: "premium-required" as const,
+        credits: 1,
+      },
+      {
+        name: "Mistral Small 3.2",
+        model: "mistral-small-latest" as const,
+        description:
+          "Mistral's update to their previous small model, released June 2025. Ideal for quick tasks and small conversations.",
+        capabilities: [
+          "text-input" as const,
+          "image-input" as const,
+          "text-output" as const,
+        ],
+        icon: "small" as const,
+        access: "premium-required" as const,
+        credits: 1,
+      },
     ];
 
     // Delete existing experiences

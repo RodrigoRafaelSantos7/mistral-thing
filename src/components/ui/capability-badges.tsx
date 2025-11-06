@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Arrow } from "@/components/icons/arrow";
+import { Image } from "@/components/icons/image";
 import { TextIcon } from "@/components/icons/text";
 import {
   Tooltip,
@@ -35,8 +36,7 @@ function getCapabilityIcon(capability: Capability) {
     case "text":
       return <TextIcon />;
     case "image":
-      // TODO: Add ImageIcon when available
-      return <TextIcon />;
+      return <Image />;
     case "voice":
       // TODO: Add VoiceIcon when available
       return <TextIcon />;
