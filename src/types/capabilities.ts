@@ -6,4 +6,5 @@ export type Capability =
   | "voice-input"
   | "voice-output"
   | "audio-input"
-  | "audio-output";
+  | "audio-output"
+  | "reasoning-output";

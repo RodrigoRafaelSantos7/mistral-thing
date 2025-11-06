@@ -48,7 +48,8 @@ const capabilities = v.union(
   v.literal("voice-input"),
   v.literal("voice-output"),
   v.literal("audio-input"),
-  v.literal("audio-output")
+  v.literal("audio-output"),
+  v.literal("reasoning-output")
 );
 
 const accesses = v.union(

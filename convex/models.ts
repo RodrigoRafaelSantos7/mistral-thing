@@ -70,6 +70,21 @@ export const seedModels = mutation({
         access: "premium-required" as const,
         credits: 1,
       },
+      {
+        name: "Magistral Medium 1.2",
+        model: "magistral-medium-latest" as const,
+        description:
+          "Mistral's frontier-class multimodal reasoning model update of September 2025.",
+        capabilities: [
+          "text-input" as const,
+          "image-input" as const,
+          "text-output" as const,
+          "reasoning-output" as const,
+        ],
+        icon: "magistral" as const,
+        access: "premium-required" as const,
+        credits: 1,
+      },
     ];
 
     // Delete existing experiences
