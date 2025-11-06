@@ -40,6 +40,35 @@ export const themes = v.union(
   v.literal("vercel")
 );
 
+const capabilities = v.union(
+  v.literal("reasoning"),
+  v.literal("tools"),
+  v.literal("vision"),
+  v.literal("documents")
+);
+
+const accesses = v.union(
+  v.literal("public"),
+  v.literal("account-required"),
+  v.literal("premium-required")
+);
+
+const icons = v.union(
+  v.literal("codestral-embed"),
+  v.literal("codestral"),
+  v.literal("devstral"),
+  v.literal("embed"),
+  v.literal("large"),
+  v.literal("magistral"),
+  v.literal("medium"),
+  v.literal("ministral"),
+  v.literal("nemo"),
+  v.literal("ocr"),
+  v.literal("pixtral"),
+  v.literal("small"),
+  v.literal("voxtral")
+);
+
 const schema = defineSchema({
   settings: defineTable({
     userId: v.string(),
@@ -51,6 +80,15 @@ const schema = defineSchema({
     modelId: models,
     pinnedModels: v.array(models),
   }).index("by_userId", ["userId"]),
+  model: defineTable({
+    name: v.string(),
+    model: models,
+    description: v.string(),
+    capabilities: v.array(capabilities),
+    icon: icons,
+    access: accesses,
+    credits: v.number(),
+  }),
 });
 
 export default schema;
