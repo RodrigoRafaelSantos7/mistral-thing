@@ -1,1 +1,9 @@
-export type Capability = "reasoning" | "tools" | "vision" | "documents";
+export type Capability =
+  | "text-input"
+  | "text-output"
+  | "image-input"
+  | "image-output"
+  | "voice-input"
+  | "voice-output"
+  | "audio-input"
+  | "audio-output";

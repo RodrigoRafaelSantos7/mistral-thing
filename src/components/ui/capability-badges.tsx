@@ -1,5 +1,6 @@
-import { BrainIcon, EyeIcon, FileIcon, WrenchIcon } from "lucide-react";
-import { match } from "ts-pattern";
+import type { ReactNode } from "react";
+import { Arrow } from "@/components/icons/arrow";
+import { TextIcon } from "@/components/icons/text";
 import {
   Tooltip,
   TooltipContent,
@@ -7,6 +8,45 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { Capability } from "@/types/capabilities";
+
+type CapabilityIconProps = {
+  capability: Capability;
+  children: ReactNode;
+};
+
+function CapabilityIcon({ capability, children }: CapabilityIconProps) {
+  const label = capability
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function getCapabilityIcon(capability: Capability) {
+  const baseType = capability.split("-")[0];
+
+  switch (baseType) {
+    case "text":
+      return <TextIcon />;
+    case "image":
+      // TODO: Add ImageIcon when available
+      return <TextIcon />;
+    case "voice":
+      // TODO: Add VoiceIcon when available
+      return <TextIcon />;
+    case "audio":
+      // TODO: Add AudioIcon when available
+      return <TextIcon />;
+    default:
+      return <TextIcon />;
+  }
+}
 
 export type CapabilityBadgesProps = {
   capabilities?: Capability[];
@@ -21,48 +61,32 @@ export function CapabilityBadges({
     return null;
   }
 
-  const sortedCapabilities = [...capabilities].sort((a, b) =>
-    a.localeCompare(b)
-  );
+  const inputs = capabilities.filter((cap) => cap.endsWith("-input"));
+  const outputs = capabilities.filter((cap) => cap.endsWith("-output"));
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
-      {sortedCapabilities.map((capability) => (
-        <Tooltip key={capability}>
-          <TooltipTrigger>
-            <div
-              className={cn(
-                "z-1 rounded-lg p-1 font-medium text-[10px] text-primary",
-                match(capability)
-                  .with("reasoning", () => "bg-pink-400/10")
-                  .with("vision", () => "bg-blue-400/10")
-                  .with("documents", () => "bg-yellow-400/10")
-                  .with("tools", () => "bg-green-400/10")
-                  .exhaustive()
-              )}
-            >
-              {match(capability)
-                .with("reasoning", () => (
-                  <BrainIcon className="size-3.5 text-pink-400" />
-                ))
-                .with("vision", () => (
-                  <EyeIcon className="size-3.5 text-blue-400" />
-                ))
-                .with("documents", () => (
-                  <FileIcon className="size-3.5 text-yellow-400" />
-                ))
-                .with("tools", () => (
-                  <WrenchIcon className="size-3.5 text-green-400" />
-                ))
-                .exhaustive()}
-            </div>
-          </TooltipTrigger>
+      <div className="z-1 flex items-center gap-1 rounded-lg p-1 font-medium text-[10px] text-primary">
+        {inputs.map((input) => (
+          <CapabilityIcon capability={input} key={input}>
+            <span className="flex items-center">
+              {getCapabilityIcon(input)}
+            </span>
+          </CapabilityIcon>
+        ))}
 
-          <TooltipContent>
-            {capability.charAt(0).toUpperCase() + capability.slice(1)}
-          </TooltipContent>
-        </Tooltip>
-      ))}
+        <span className="flex items-center">
+          <Arrow />
+        </span>
+
+        {outputs.map((output) => (
+          <CapabilityIcon capability={output} key={output}>
+            <span className="flex items-center">
+              {getCapabilityIcon(output)}
+            </span>
+          </CapabilityIcon>
+        ))}
+      </div>
     </div>
   );
 }

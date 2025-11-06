@@ -1,5 +1,5 @@
-import { ConvexError } from "convex/values";
-import { query } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 
 /**
@@ -24,5 +24,40 @@ export const getAll = query({
     const models = await ctx.db.query("model").collect();
 
     return models;
+  },
+});
+
+export const seedModels = mutation({
+  args: {},
+  returns: v.null(),
+  handler: async (ctx) => {
+    const modelsArray = [
+      {
+        name: "Codestral",
+        model: "codestral-latest" as const,
+        description:
+          "Mistral's cutting-edge language model for coding released end of July 2025, Codestral specializes in low-latency, high-frequency tasks such as fill-in-the-middle (FIM), code correction and test generation.",
+        capabilities: ["text-input" as const, "text-output" as const],
+        icon: "codestral" as const,
+        access: "premium-required" as const,
+        credits: 1,
+      },
+    ];
+
+    // Delete existing experiences
+    await ctx.db
+      .query("model")
+      .collect()
+      .then(async (existingModels) => {
+        for (const model of existingModels) {
+          await ctx.db.delete(model._id);
+        }
+      });
+
+    // Insert new experiences
+    for (const model of modelsArray) {
+      await ctx.db.insert("model", model);
+    }
+    return null;
   },
 });
