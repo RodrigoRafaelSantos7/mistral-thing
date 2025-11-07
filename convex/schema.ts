@@ -52,11 +52,7 @@ const capabilities = v.union(
   v.literal("reasoning-output")
 );
 
-const accesses = v.union(
-  v.literal("public"),
-  v.literal("account-required"),
-  v.literal("premium-required")
-);
+const accesses = v.union(v.literal("public"), v.literal("account-required"));
 
 const icons = v.union(
   v.literal("codestral-embed"),

@@ -39,28 +39,28 @@ export const seedModels = mutation({
           "Mistral's cutting-edge language model for coding released end of July 2025, Codestral specializes in low-latency, high-frequency tasks such as fill-in-the-middle (FIM), code correction and test generation.",
         capabilities: ["text-input" as const, "text-output" as const],
         icon: "codestral" as const,
-        access: "premium-required" as const,
+        access: "account-required" as const,
         credits: 1,
       },
       {
         name: "Mistral Medium 3.1",
         model: "mistral-medium-latest" as const,
         description:
-          "Mistral's frontier-class multimodal model released August 2025. Improving tone and performance.",
+          "Mistral's frontier-class multimodal model released August 2025. Improving tone and performance. This model requires an account to use.",
         capabilities: [
           "text-input" as const,
           "image-input" as const,
           "text-output" as const,
         ],
         icon: "medium" as const,
-        access: "premium-required" as const,
+        access: "account-required" as const,
         credits: 1,
       },
       {
         name: "Mistral Small 3.2",
         model: "mistral-small-latest" as const,
         description:
-          "Mistral's update to their previous small model, released June 2025. Ideal for quick tasks and small conversations.",
+          "Mistral's update to their previous small model, released June 2025. Ideal for quick tasks and small conversations. This model requires an account to use.",
         capabilities: [
           "text-input" as const,
           "image-input" as const,
@@ -74,7 +74,7 @@ export const seedModels = mutation({
         name: "Magistral Medium 1.2",
         model: "magistral-medium-latest" as const,
         description:
-          "Mistral's frontier-class multimodal reasoning model update of September 2025. Ideal for complex tasks and conversations. Requires a premium account.",
+          "Mistral's frontier-class multimodal reasoning model update of September 2025. Ideal for complex tasks and conversations. Requires an account to use.",
         capabilities: [
           "text-input" as const,
           "image-input" as const,
@@ -82,7 +82,7 @@ export const seedModels = mutation({
           "reasoning-output" as const,
         ],
         icon: "magistral" as const,
-        access: "premium-required" as const,
+        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -134,7 +134,7 @@ export const seedModels = mutation({
           "image-input" as const,
         ],
         icon: "pixtral" as const,
-        access: "account-required" as const,
+        access: "public" as const,
         credits: 1,
       },
       {
