@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger";
 
 const log = logger.child({ module: "useAnonymousConvexAuth" });
 
-export function useAnonymousConvexAuth(onReady: () => void) {
+export function useAnonymousConvexAuth(onReady?: () => void) {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const bootstrapped = useRef(false);
 
@@ -21,7 +21,9 @@ export function useAnonymousConvexAuth(onReady: () => void) {
           await authClient.signIn.anonymous();
         }
         bootstrapped.current = true;
-        onReady();
+        if (onReady) {
+          onReady();
+        }
       } catch (error) {
         log.error(error);
       }

@@ -1,9 +1,13 @@
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import {
+  type AuthFunctions,
+  createClient,
+  type GenericCtx,
+} from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 import { anonymous } from "better-auth/plugins";
 import { v } from "convex/values";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 
@@ -11,9 +15,49 @@ const siteUrl = process.env.SITE_URL
   ? process.env.SITE_URL
   : "http://localhost:3000";
 
+const authFunctions: AuthFunctions = internal.auth;
+
 // The component client has methods needed for integrating Convex with Better Auth,
 // as well as helper methods for general use.
-export const authComponent = createClient<DataModel>(components.betterAuth);
+export const authComponent = createClient<DataModel>(components.betterAuth, {
+  authFunctions,
+  triggers: {
+    user: {
+      onCreate: async (ctx, doc) => {
+        const settings = await ctx.db
+          .query("settings")
+          .withIndex("by_userId", (q) => q.eq("userId", doc._id))
+          .unique();
+
+        if (settings) {
+          return;
+        }
+
+        await ctx.db.insert("settings", {
+          userId: doc._id,
+          mode: "dark",
+          theme: "default",
+          modelId: "mistral-small-latest",
+          pinnedModels: [
+            "mistral-medium-latest",
+            "codestral-latest",
+            "mistral-small-latest",
+          ],
+        });
+      },
+      onDelete: async (ctx, doc) => {
+        const settings = await ctx.db
+          .query("settings")
+          .withIndex("by_userId", (q) => q.eq("userId", doc._id))
+          .unique();
+
+        if (settings) {
+          await ctx.db.delete(settings._id);
+        }
+      },
+    },
+  },
+});
 
 export const createAuth = (
   ctx: GenericCtx<DataModel>,
@@ -55,3 +99,5 @@ export const getCurrentUser = query({
   returns: v.union(v.any(), v.null()),
   handler: async (ctx) => authComponent.getAuthUser(ctx),
 });
+
+export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
