@@ -2,6 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import { ArrowRightIcon, GithubIcon, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import z from "zod";
 import { Anonymous, NotAnonymous } from "@/components/app/auth";
@@ -10,6 +11,7 @@ import GoogleIcon from "@/components/icons/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useSettings } from "@/hooks/use-database";
 import { authClient } from "@/lib/auth-client";
 import { indexPath, magicLinkPath } from "@/paths";
 
@@ -18,6 +20,7 @@ const schema = z.object({
 });
 
 const Page = () => {
+  const { settings } = useSettings();
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -52,6 +55,12 @@ const Page = () => {
       <Anonymous>
         <div className="col-span-1 row-span-3 flex max-w-md flex-col items-center justify-center gap-6 rounded-2x">
           <div className="flex min-w-[280px] flex-col items-center gap-2 md:min-w-[350px]">
+            <Image
+              alt="Mistral Thing"
+              height={100}
+              src={settings?.mode === "light" ? "/icon.svg" : "/icon-white.svg"}
+              width={100}
+            />
             <span className="font-semibold text-foreground text-xl">
               Login to Mistral Thing
             </span>

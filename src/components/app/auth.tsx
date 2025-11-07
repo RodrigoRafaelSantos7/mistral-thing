@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loading } from "@/components/ui/loading";
 import { useSession } from "@/hooks/use-session";
 import { authClient } from "@/lib/auth-client";
 import { loggedOutPath } from "@/paths";
@@ -21,7 +20,7 @@ export function Anonymous({ children }: { children: React.ReactNode }) {
   const { data, isPending } = useSession();
 
   if (isPending) {
-    return <Loading />;
+    return null;
   }
 
   if (!data) {
@@ -39,7 +38,7 @@ export function NotAnonymous({ children }: { children: React.ReactNode }) {
   const { data, isPending } = useSession();
 
   if (isPending) {
-    return <Loading />;
+    return null;
   }
 
   if (!data) {
