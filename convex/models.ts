@@ -74,7 +74,7 @@ export const seedModels = mutation({
         name: "Magistral Medium 1.2",
         model: "magistral-medium-latest" as const,
         description:
-          "Mistral's frontier-class multimodal reasoning model update of September 2025.",
+          "Mistral's frontier-class multimodal reasoning model update of September 2025. Ideal for complex tasks and conversations. Requires a premium account.",
         capabilities: [
           "text-input" as const,
           "image-input" as const,
