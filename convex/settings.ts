@@ -67,11 +67,11 @@ export const create = mutation({
       userId: user._id,
       mode: "dark",
       theme: "default",
-      modelId: "mistral-medium-latest",
+      modelId: "mistral-small-latest",
       pinnedModels: [
-        "magistral-medium-latest",
-        "mistral-ocr-latest",
-        "voxtral-small-latest",
+        "mistral-medium-latest",
+        "codestral-latest",
+        "mistral-small-latest",
       ],
     });
 

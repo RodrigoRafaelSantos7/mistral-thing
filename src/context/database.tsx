@@ -1,11 +1,11 @@
 "use client";
 
 import type { ConvexReactClient } from "convex/react";
-import { useConvex, useConvexAuth, useMutation } from "convex/react";
-import { createContext, useEffect } from "react";
+import { useConvex } from "convex/react";
+import { createContext, useCallback, useMemo } from "react";
 import { Loading } from "@/components/ui/loading";
-import { api } from "@/convex/_generated/api";
-import { authClient } from "@/lib/auth-client";
+import { useAnonymousConvexAuth } from "@/hooks/use-anonymous-convex-auth";
+import { useSettings } from "@/hooks/use-database";
 import { logger } from "@/lib/logger";
 
 export const DatabaseContext = createContext<ConvexReactClient | undefined>(
@@ -16,25 +16,17 @@ const log = logger.child({ module: "DatabaseProvider" });
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const convexClient = useConvex();
-  const { isAuthenticated, isLoading } = useConvexAuth();
-  const createSettings = useMutation(api.settings.create);
+  const { createSettings } = useSettings();
+  const isReady = useMemo(() => convexClient !== undefined, [convexClient]);
 
-  useEffect(() => {
-    const handleSignIn = async () => {
-      if (!(isLoading || isAuthenticated)) {
-        try {
-          await authClient.signOut();
-          await authClient.signIn.anonymous();
-          createSettings().catch((error) => log.error(error));
-        } catch (error) {
-          log.error(error);
-        }
-      }
-    };
-    handleSignIn();
-  }, [isAuthenticated, isLoading, createSettings]);
+  useAnonymousConvexAuth(
+    useCallback(() => {
+      log.info("Anonymous Convex Auth ready");
+      createSettings();
+    }, [createSettings])
+  );
 
-  if (isLoading || !isAuthenticated || !convexClient) {
+  if (!isReady) {
     return <Loading />;
   }
 
