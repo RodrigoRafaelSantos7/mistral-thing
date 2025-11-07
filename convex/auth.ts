@@ -57,6 +57,12 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
   },
 });
 
+const ONE_HOUR_SECONDS = 60 * 60;
+const DAYS_IN_YEAR = 365;
+const HOURS_IN_DAY = 24;
+const ONE_YEAR = ONE_HOUR_SECONDS * HOURS_IN_DAY * DAYS_IN_YEAR;
+const ONE_DAY = ONE_HOUR_SECONDS * HOURS_IN_DAY;
+
 export const createAuth = (
   ctx: GenericCtx<DataModel>,
   { optionsOnly } = { optionsOnly: false }
@@ -66,6 +72,10 @@ export const createAuth = (
     // this is not required, but there's a lot of noise in logs without it.
     logger: {
       disabled: optionsOnly,
+    },
+    session: {
+      expiresIn: ONE_YEAR,
+      updateAge: ONE_DAY,
     },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
