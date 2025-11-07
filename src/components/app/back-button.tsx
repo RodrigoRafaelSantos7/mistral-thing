@@ -14,7 +14,7 @@ const BackButton = () => (
     transition={{ duration: 0.5, delay: 0.1 }}
   >
     <div>
-      <Link href={indexPath()}>
+      <Link href={indexPath()} prefetch>
         <Button variant="ghost">
           <ArrowLeftIcon className="size-4" />
           <span>Back</span>
