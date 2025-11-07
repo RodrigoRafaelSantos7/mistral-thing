@@ -6,10 +6,8 @@ import {
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 import { anonymous } from "better-auth/plugins";
-import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
 
 const siteUrl = process.env.SITE_URL
   ? process.env.SITE_URL
@@ -91,13 +89,5 @@ export const createAuth = (
     ],
   });
 };
-
-// Example function for getting the current user
-// Feel free to edit, omit, etc.
-export const getCurrentUser = query({
-  args: {},
-  returns: v.union(v.any(), v.null()),
-  handler: async (ctx) => authComponent.getAuthUser(ctx),
-});
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
