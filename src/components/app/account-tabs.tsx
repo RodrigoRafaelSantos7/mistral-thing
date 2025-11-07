@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  BotIcon,
-  CreditCardIcon,
-  PaintbrushIcon,
-  SettingsIcon,
-  UserIcon,
-} from "lucide-react";
+import { BotIcon, PaintbrushIcon, SettingsIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,7 +10,6 @@ import {
   accountModelsPath,
   accountPath,
   accountPreferencesPath,
-  accountSubscriptionPath,
 } from "@/paths";
 
 const pages = [
@@ -25,11 +18,7 @@ const pages = [
     url: accountPath(),
     icon: <UserIcon />,
   },
-  {
-    title: "Subscription",
-    url: accountSubscriptionPath(),
-    icon: <CreditCardIcon />,
-  },
+
   {
     title: "Preferences",
     url: accountPreferencesPath(),

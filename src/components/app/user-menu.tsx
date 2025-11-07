@@ -2,7 +2,6 @@
 
 import {
   BotIcon,
-  CreditCardIcon,
   GithubIcon,
   LogInIcon,
   LogOutIcon,
@@ -32,7 +31,6 @@ import {
   accountModelsPath,
   accountPath,
   accountPreferencesPath,
-  accountSubscriptionPath,
   loginPath,
 } from "@/paths";
 
@@ -71,7 +69,9 @@ export function UserMenu() {
             <div className="truncate text-sm">
               {getUsername({ id: user._id, name: user.name })}
             </div>
-            <div className="truncate text-muted-foreground text-xs">Free</div>
+            <div className="truncate text-muted-foreground text-xs">
+              {user.email}
+            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -79,12 +79,6 @@ export function UserMenu() {
           <Link href={accountPath()}>
             <UserIcon className="size-4" />
             Account
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={accountSubscriptionPath()}>
-            <CreditCardIcon className="size-4" />
-            Subscription
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
