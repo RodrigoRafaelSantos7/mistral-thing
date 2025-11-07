@@ -38,6 +38,8 @@ export const createAuth = (
       anonymous({
         disableDeleteAnonymousUser: true,
         onLinkAccount: async ({ anonymousUser, newUser }) => {
+          // Need to delete the anonymous user after linking
+          // There is a bug with the anonymous user
           // biome-ignore lint/suspicious/noConsole: Temporary
           await console.log({ anonymousUser, newUser });
         },
