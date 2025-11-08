@@ -4,8 +4,8 @@ import { useQuery } from "convex/react";
 import { toast } from "sonner";
 import ModelIcon from "@/components/app/model-icon";
 import { CapabilityBadges } from "@/components/ui/capability-badges";
-import { Loading } from "@/components/ui/loading";
 import { Section } from "@/components/ui/section";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { api } from "@/convex/_generated/api";
 import { useSettings } from "@/hooks/use-database";
@@ -16,7 +16,7 @@ const Page = () => {
   const allModels = useQuery(api.models.getAll);
 
   if (!settings) {
-    return <Loading />;
+    return <Spinner />;
   }
 
   const currentPinned = settings.pinnedModels || [];

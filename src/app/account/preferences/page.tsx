@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import z from "zod";
 import { SingleFieldForm } from "@/components/app/single-field-form";
 import { Input } from "@/components/ui/input";
-import { Loading } from "@/components/ui/loading";
 import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useSettings } from "@/hooks/use-database";
 
@@ -54,7 +54,7 @@ const Page = () => {
   const { settings, updateSettings } = useSettings();
 
   if (!settings) {
-    return <Loading />;
+    return <Spinner />;
   }
 
   return (
