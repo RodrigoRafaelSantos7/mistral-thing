@@ -8,8 +8,8 @@ const Page = () => (
     <title>Magic Link Sent</title>
     <div className="col-span-1 row-span-3 flex max-w-md flex-col items-center justify-center gap-6 p-8">
       <div className="flex flex-col items-center gap-2">
-        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
-          <MailIcon className="size-6 text-blue-600 dark:text-blue-400" />
+        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <MailIcon className="size-6 text-primary" />
         </div>
         <span className="font-semibold text-foreground text-xl">
           Magic Link Sent

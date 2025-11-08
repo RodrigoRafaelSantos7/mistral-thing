@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { siteConfig } from "@/config/site";
+import { SITE_CONFIG } from "@/config/site";
 import { useAuth } from "@/hooks/use-auth";
 import { useUser } from "@/hooks/use-database";
 import { getUsername } from "@/lib/usernames";
@@ -98,7 +98,11 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={siteConfig.links.github} rel="noreferrer" target="_blank">
+          <Link
+            href={SITE_CONFIG.links.github}
+            rel="noreferrer"
+            target="_blank"
+          >
             <GithubIcon className="size-4" />
             GitHub
           </Link>

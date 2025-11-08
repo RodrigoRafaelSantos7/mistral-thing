@@ -1,6 +1,6 @@
 import { getUrl } from "@/lib/utils";
 
-export const siteConfig = {
+export const SITE_CONFIG = {
   name: "Mistral Thing",
   url: getUrl(),
   ogImage: `${getUrl()}/og/home`,
@@ -11,4 +11,4 @@ export const siteConfig = {
   },
 };
 
-export type SiteConfig = typeof siteConfig;
+export type SITE_CONFIG_TYPE = typeof SITE_CONFIG;

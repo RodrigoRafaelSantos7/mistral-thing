@@ -32,4 +32,4 @@ const Page = () => (
   </div>
 );
 
-export { Page };
+export default Page;

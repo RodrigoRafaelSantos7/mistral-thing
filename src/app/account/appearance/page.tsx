@@ -5,46 +5,9 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
+import { THEMES } from "@/config/themes";
 import { useSettings } from "@/hooks/use-database";
 import { cn } from "@/lib/utils";
-
-const themes = [
-  {
-    name: "Default",
-    value: "default",
-    description: "Clean and minimal design",
-  },
-  {
-    name: "T3 Chat",
-    value: "t3-chat",
-    description: "Modern chat interface style",
-  },
-  {
-    name: "Claymorphism",
-    value: "claymorphism",
-    description: "Soft, clay-like appearance",
-  },
-  {
-    name: "Claude",
-    value: "claude",
-    description: "Anthropic's Claude-inspired theme",
-  },
-  {
-    name: "Graphite",
-    value: "graphite",
-    description: "Dark and sophisticated",
-  },
-  {
-    name: "Amethyst Haze",
-    value: "amethyst-haze",
-    description: "Purple-tinted aesthetic",
-  },
-  {
-    name: "Vercel",
-    value: "vercel",
-    description: "Vercel-inspired design",
-  },
-] as const;
 
 const Page = () => {
   const { settings, updateSettings } = useSettings();
@@ -126,7 +89,7 @@ const Page = () => {
       <Separator />
       <Section description="Choose your preferred visual theme" title="Theme">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {themes.map((themeOption) => (
+          {THEMES.map((themeOption) => (
             <button
               className={cn(
                 "relative w-full cursor-pointer overflow-hidden rounded-lg border bg-background/10 p-4 text-left backdrop-blur-md transition-all hover:border-foreground/20",

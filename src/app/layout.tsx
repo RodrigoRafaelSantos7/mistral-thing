@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/providers";
-import { siteConfig } from "@/config/site";
+import { SITE_CONFIG } from "@/config/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: SITE_CONFIG.name,
+    template: `%s - ${SITE_CONFIG.name}`,
   },
-  metadataBase: new URL(siteConfig.url),
-  description: siteConfig.description,
+  metadataBase: new URL(SITE_CONFIG.url),
+  description: SITE_CONFIG.description,
   keywords: [
     "Mistral Thing",
     "AI Chat",
@@ -30,24 +30,24 @@ export const metadata: Metadata = {
   authors: [
     {
       name: "Rodrigo Santos",
-      url: siteConfig.links.github,
+      url: SITE_CONFIG.links.github,
     },
   ],
   creator: "rrcssantosdev",
   openGraph: {
     type: "website",
     locale: "en",
-    url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-    images: [siteConfig.ogImage],
+    url: SITE_CONFIG.url,
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    siteName: SITE_CONFIG.name,
+    images: [SITE_CONFIG.ogImage],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    images: [SITE_CONFIG.ogImage],
     creator: "@rrcssantosdev",
   },
   robots: {

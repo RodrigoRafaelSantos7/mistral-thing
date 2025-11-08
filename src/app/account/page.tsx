@@ -11,11 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
-import {
-  LogoutDialog,
-  NotAnonymous,
-  RevokeSessionDialog,
-} from "@/components/app/auth";
+import { LogoutDialog, RevokeSessionDialog } from "@/components/app/auth";
 import { SingleFieldForm } from "@/components/app/single-field-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -213,19 +209,17 @@ const Page = () => {
                     </RevokeSessionDialog>
                   )}
 
-                  <NotAnonymous>
-                    {isCurrentSession && (
-                      <LogoutDialog>
-                        <Button
-                          className="text-muted-foreground hover:text-destructive"
-                          size="sm"
-                          variant="ghost"
-                        >
-                          <span>Logout</span>
-                        </Button>
-                      </LogoutDialog>
-                    )}
-                  </NotAnonymous>
+                  {isCurrentSession && (
+                    <LogoutDialog>
+                      <Button
+                        className="text-muted-foreground hover:text-destructive"
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <span>Logout</span>
+                      </Button>
+                    </LogoutDialog>
+                  )}
                 </div>
               );
             })
