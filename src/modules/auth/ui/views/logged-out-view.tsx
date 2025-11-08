@@ -1,12 +1,7 @@
 import { CheckCircleIcon } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { loginPath } from "@/paths";
-
-export const metadata: Metadata = {
-  title: "Logged Out Successfully",
-};
 
 const LoggedOutView = () => (
   <div className="relative flex h-full w-full flex-1 items-center justify-center p-4">
