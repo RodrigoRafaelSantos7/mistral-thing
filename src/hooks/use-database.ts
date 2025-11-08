@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+
 export function useSettings() {
   const settings = useQuery(api.settings.get, {});
   const updateSettings = useMutation(api.settings.update).withOptimisticUpdate(
@@ -32,6 +33,5 @@ export function useSettings() {
 }
 
 export function useUser() {
-  const user = useQuery(api.auth.getCurrentUser);
-  return user;
+  return useQuery(api.auth.getCurrentUser);
 }
