@@ -33,7 +33,7 @@ export const DEFAULT_THEME = "default";
 export const DEFAULT_MODE = "dark";
 export const STORAGE_KEY = "mistral-thing-theme";
 
-export const EXTENSIVE_THEMES = [
+export const THEME_OPTIONS = [
   "default-light",
   "default-dark",
   "t3-chat-light",
