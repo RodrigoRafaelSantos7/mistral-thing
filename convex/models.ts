@@ -1,4 +1,4 @@
-import { ConvexError, v } from "convex/values";
+import { ConvexError } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 
@@ -28,8 +28,6 @@ export const getAll = query({
 });
 
 export const seedModels = mutation({
-  args: {},
-  returns: v.null(),
   handler: async (ctx) => {
     const modelsArray = [
       {
@@ -39,7 +37,6 @@ export const seedModels = mutation({
           "Mistral's cutting-edge language model for coding released end of July 2025, Codestral specializes in low-latency, high-frequency tasks such as fill-in-the-middle (FIM), code correction and test generation.",
         capabilities: ["text-input" as const, "text-output" as const],
         icon: "codestral" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -53,7 +50,6 @@ export const seedModels = mutation({
           "text-output" as const,
         ],
         icon: "medium" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -67,7 +63,6 @@ export const seedModels = mutation({
           "text-output" as const,
         ],
         icon: "small" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -82,7 +77,6 @@ export const seedModels = mutation({
           "reasoning-output" as const,
         ],
         icon: "magistral" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -96,7 +90,6 @@ export const seedModels = mutation({
           "text-output" as const,
         ],
         icon: "voxtral" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -110,7 +103,6 @@ export const seedModels = mutation({
           "text-output" as const,
         ],
         icon: "voxtral" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -120,7 +112,6 @@ export const seedModels = mutation({
           "An update to Mistral's open source model that excels at using tools to explore codebases, editing multiple files and power software engineering agents.",
         capabilities: ["text-input" as const, "text-output" as const],
         icon: "devstral" as const,
-        access: "account-required" as const,
         credits: 1,
       },
       {
@@ -134,7 +125,6 @@ export const seedModels = mutation({
           "image-input" as const,
         ],
         icon: "pixtral" as const,
-        access: "public" as const,
         credits: 1,
       },
       {
@@ -148,12 +138,10 @@ export const seedModels = mutation({
           "image-input" as const,
         ],
         icon: "nemo" as const,
-        access: "account-required" as const,
         credits: 1,
       },
     ];
 
-    // Delete existing experiences
     await ctx.db
       .query("model")
       .collect()
@@ -163,10 +151,8 @@ export const seedModels = mutation({
         }
       });
 
-    // Insert new experiences
     for (const model of modelsArray) {
       await ctx.db.insert("model", model);
     }
-    return null;
   },
 });

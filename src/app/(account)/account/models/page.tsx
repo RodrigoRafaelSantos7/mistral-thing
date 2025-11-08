@@ -3,7 +3,6 @@
 import { useQuery } from "convex/react";
 import { toast } from "sonner";
 import ModelIcon from "@/components/app/model-icon";
-import { Badge } from "@/components/ui/badge";
 import { CapabilityBadges } from "@/components/ui/capability-badges";
 import { Loading } from "@/components/ui/loading";
 import { Section } from "@/components/ui/section";
@@ -72,11 +71,6 @@ const Page = () => {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{model.name}</span>
-                      {model.access === "account-required" && (
-                        <Badge className="text-xs" variant="outline">
-                          Account Required
-                        </Badge>
-                      )}
                     </div>
                     <p className="text-muted-foreground text-sm">
                       {model.description}

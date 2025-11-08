@@ -52,8 +52,6 @@ const capabilities = v.union(
   v.literal("reasoning-output")
 );
 
-const accesses = v.union(v.literal("public"), v.literal("account-required"));
-
 const icons = v.union(
   v.literal("codestral-embed"),
   v.literal("codestral"),
@@ -87,7 +85,6 @@ const schema = defineSchema({
     description: v.string(),
     capabilities: v.array(capabilities),
     icon: icons,
-    access: accesses,
     credits: v.number(),
   }),
 });
