@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import {
   Clock,
   Globe,
@@ -17,8 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useListSessions } from "@/hooks/use-list-sessions";
+import { Spinner } from "@/components/ui/spinner";
+import { api } from "@/convex/_generated/api";
 import { useSession } from "@/hooks/use-session";
 import { authClient } from "@/lib/auth-client";
 import { getUsername } from "@/lib/usernames";
@@ -33,7 +34,12 @@ const MILLISECONDS_PER_DAY = MILLISECONDS_PER_HOUR * HOURS_PER_DAY;
 
 const Page = () => {
   const { data: session } = useSession();
-  const { sessions: activeSessions, isLoading } = useListSessions();
+
+  const sessions = useQuery(api.users.getAllSessions);
+
+  if (!sessions) {
+    return <Spinner />;
+  }
 
   const getDeviceIcon = (userAgent: string) => {
     const parser = new UAParser(userAgent);
@@ -125,105 +131,89 @@ const Page = () => {
       <Separator />
       <Section description="Manage your sessions" title="Sessions">
         <div className="flex flex-col gap-4">
-          {isLoading ? (
-            <div className="flex items-center justify-between rounded-lg border border-foreground/10 bg-muted/50 p-4">
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <Skeleton className="h-8 w-8 rounded-md" />
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <Skeleton className="h-4 w-48" />
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This is a list of sessions (TODO: Refactor into Smaller Components)
-            activeSessions.map((sessionItem) => {
-              const isCurrentSession = sessionItem.id === session?.session.id;
-              const deviceInfo = sessionItem.userAgent
-                ? getDeviceInfo(sessionItem.userAgent)
-                : "Unknown device";
-              const deviceIcon = sessionItem.userAgent ? (
-                getDeviceIcon(sessionItem.userAgent)
-              ) : (
-                <Globe className="size-4" />
-              );
+          {sessions.map((sessionItem) => {
+            const isCurrentSession = sessionItem.id === session?.session.id;
+            const deviceInfo = sessionItem.userAgent
+              ? getDeviceInfo(sessionItem.userAgent)
+              : "Unknown device";
+            const deviceIcon = sessionItem.userAgent ? (
+              getDeviceIcon(sessionItem.userAgent)
+            ) : (
+              <Globe className="size-4" />
+            );
 
-              return (
-                <div
-                  className={`flex items-center justify-between rounded-lg border p-4 transition-colors ${
-                    isCurrentSession
-                      ? "border-primary/20 bg-primary/10"
-                      : "border-foreground/10 bg-muted/50 hover:bg-muted/80"
-                  }`}
-                  key={sessionItem.id}
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-md ${
-                        isCurrentSession
-                          ? "bg-primary/20 text-primary"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {deviceIcon}
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate font-medium text-sm">
-                          {deviceInfo}
+            return (
+              <div
+                className={`flex items-center justify-between rounded-lg border p-4 transition-colors ${
+                  isCurrentSession
+                    ? "border-primary/20 bg-primary/10"
+                    : "border-foreground/10 bg-muted/50 hover:bg-muted/80"
+                }`}
+                key={sessionItem.id}
+              >
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                      isCurrentSession
+                        ? "bg-primary/20 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {deviceIcon}
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate font-medium text-sm">
+                        {deviceInfo}
+                      </span>
+                      {isCurrentSession && (
+                        <span className="rounded-full bg-primary/20 px-2 py-0.5 text-primary text-xs">
+                          Current
                         </span>
-                        {isCurrentSession && (
-                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-primary text-xs">
-                            Current
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-muted-foreground text-xs">
-                        {sessionItem.ipAddress && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="size-3" />
-                            <span>{sessionItem.ipAddress}</span>
-                          </div>
-                        )}
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4 text-muted-foreground text-xs">
+                      {sessionItem.ipAddress && (
                         <div className="flex items-center gap-1">
-                          <Clock className="size-3" />
-                          <span>
-                            {formatDate(new Date(sessionItem.createdAt))}
-                          </span>
+                          <MapPin className="size-3" />
+                          <span>{sessionItem.ipAddress}</span>
                         </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Clock className="size-3" />
+                        <span>
+                          {formatDate(new Date(sessionItem.createdAt))}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  {!isCurrentSession && (
-                    <RevokeSessionDialog token={sessionItem.token}>
-                      <Button
-                        className="text-muted-foreground hover:text-destructive"
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <span>Revoke</span>
-                      </Button>
-                    </RevokeSessionDialog>
-                  )}
-
-                  {isCurrentSession && (
-                    <LogoutDialog>
-                      <Button
-                        className="text-muted-foreground hover:text-destructive"
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <span>Logout</span>
-                      </Button>
-                    </LogoutDialog>
-                  )}
                 </div>
-              );
-            })
-          )}
+                {!isCurrentSession && (
+                  <RevokeSessionDialog token={sessionItem.token}>
+                    <Button
+                      className="text-muted-foreground hover:text-destructive"
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <span>Revoke</span>
+                    </Button>
+                  </RevokeSessionDialog>
+                )}
+
+                {isCurrentSession && (
+                  <LogoutDialog>
+                    <Button
+                      className="text-muted-foreground hover:text-destructive"
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <span>Logout</span>
+                    </Button>
+                  </LogoutDialog>
+                )}
+              </div>
+            );
+          })}
         </div>
       </Section>
     </div>

@@ -32,6 +32,7 @@ export const THEMES = [
   {
     name: "Vercel",
     value: "vercel",
+    description: "Vercel-inspired theme",
   },
 ] as const;
 

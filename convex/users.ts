@@ -12,3 +12,13 @@ export const getSession = query({
     return session;
   },
 });
+
+export const getAllSessions = query({
+  handler: async (ctx) => {
+    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+    const sessions = await auth.api.listSessions({
+      headers,
+    });
+    return sessions;
+  },
+});
