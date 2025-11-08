@@ -1,0 +1,9 @@
+export const indexPath = () => "/";
+export const accountPath = () => "/account";
+export const accountSubscriptionPath = () => "/account/subscription";
+export const accountPreferencesPath = () => "/account/preferences";
+export const accountModelsPath = () => "/account/models";
+export const accountAppearancePath = () => "/account/appearance";
+export const loginPath = () => "/login";
+export const loggedOutPath = () => "/logged-out";
+export const magicLinkPath = () => "/magic-link";
