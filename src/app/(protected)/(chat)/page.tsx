@@ -1,5 +1,9 @@
 import { Header } from "@/components/layout/header";
 
 export default function ChatPage() {
-  return <Header />;
+  return (
+    <div className="relative flex flex-1 flex-col">
+      <Header />
+    </div>
+  );
 }
