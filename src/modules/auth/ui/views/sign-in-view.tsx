@@ -3,12 +3,14 @@
 import { useForm } from "@tanstack/react-form";
 import { ArrowRightIcon, GithubIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import z from "zod";
 import { DynamicImage } from "@/components/app/dynamic-image";
 import GoogleIcon from "@/components/icons/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { indexPath, magicLinkPath } from "@/paths";
 
@@ -17,7 +19,10 @@ const schema = z.object({
 });
 
 const SignInView = () => {
+  const [googlePending, startGoogleTransition] = useTransition();
+  const [githubPending, startGithubTransition] = useTransition();
   const router = useRouter();
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -40,6 +45,23 @@ const SignInView = () => {
     },
   });
 
+  function signInWithGoogle() {
+    startGoogleTransition(async () => {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: indexPath(),
+      });
+    });
+  }
+
+  function signInWithGitHub() {
+    startGithubTransition(async () => {
+      await authClient.signIn.social({
+        provider: "github",
+        callbackURL: indexPath(),
+      });
+    });
+  }
   return (
     <form
       className="relative flex h-full w-full flex-1 items-center justify-center p-4"
@@ -114,28 +136,32 @@ const SignInView = () => {
         </div>
         <div className="flex w-full flex-col gap-2">
           <Button
-            onClick={async () => {
-              await authClient.signIn.social({
-                provider: "google",
-                callbackURL: indexPath(),
-              });
-            }}
+            disabled={googlePending}
+            onClick={signInWithGoogle}
             variant="outline"
           >
-            <GoogleIcon className="size-4" />
-            <span className="text-sm">Continue with Google</span>
+            {googlePending ? (
+              <Spinner />
+            ) : (
+              <>
+                <GoogleIcon className="size-4" />
+                <span className="text-sm">Continue with Google</span>
+              </>
+            )}
           </Button>
           <Button
-            onClick={async () => {
-              await authClient.signIn.social({
-                provider: "github",
-                callbackURL: indexPath(),
-              });
-            }}
+            disabled={githubPending}
+            onClick={signInWithGitHub}
             variant="outline"
           >
-            <GithubIcon className="text-foreground" size={16} />
-            <span className="text-sm">Continue with GitHub</span>
+            {githubPending ? (
+              <Spinner />
+            ) : (
+              <>
+                <GithubIcon className="text-foreground" size={16} />
+                <span className="text-sm">Continue with GitHub</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
