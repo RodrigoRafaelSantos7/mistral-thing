@@ -1,4 +1,4 @@
-import { AccountTabs } from "@/components/app/account-tabs";
+import { AccountTabs } from "@/modules/account/ui/components/account-tabs";
 import { BackButton } from "@/modules/account/ui/components/back-button";
 
 const AccountLayout = ({ children }: { children: React.ReactNode }) => (

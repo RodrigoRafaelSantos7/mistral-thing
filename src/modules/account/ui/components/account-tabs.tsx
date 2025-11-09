@@ -1,40 +1,10 @@
 "use client";
 
-import { BotIcon, PaintbrushIcon, SettingsIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ACCOUNT_PAGES } from "@/config/accont-pages";
 import { cn } from "@/lib/utils";
-import {
-  accountAppearancePath,
-  accountModelsPath,
-  accountPath,
-  accountPreferencesPath,
-} from "@/paths";
-
-const pages = [
-  {
-    title: "Account",
-    url: accountPath(),
-    icon: <UserIcon />,
-  },
-
-  {
-    title: "Preferences",
-    url: accountPreferencesPath(),
-    icon: <SettingsIcon />,
-  },
-  {
-    title: "Models",
-    url: accountModelsPath(),
-    icon: <BotIcon />,
-  },
-  {
-    title: "Appearance",
-    url: accountAppearancePath(),
-    icon: <PaintbrushIcon />,
-  },
-];
 
 const AccountTabs = () => {
   const pathname = usePathname();
@@ -42,7 +12,7 @@ const AccountTabs = () => {
   return (
     <div className="w-0 min-w-full overflow-x-auto">
       <div className="flex flex-row gap-2">
-        {pages.map((page) => (
+        {ACCOUNT_PAGES.map((page) => (
           <Button asChild key={page.url} variant="ghost">
             <Link
               className={cn(
@@ -53,7 +23,7 @@ const AccountTabs = () => {
               href={page.url}
               prefetch
             >
-              {page.icon}
+              <page.icon className="size-4" />
               {page.title}
             </Link>
           </Button>
