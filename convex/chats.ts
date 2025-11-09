@@ -1,9 +1,13 @@
-import { mistral } from "@ai-sdk/mistral";
+import { createMistral } from "@ai-sdk/mistral";
 import { Agent } from "@convex-dev/agent";
 import { ConvexError, v } from "convex/values";
 import { api, components } from "./_generated/api";
 import { action, type GenericCtx, mutation } from "./_generated/server";
 import { authComponent } from "./auth";
+
+const mistral = createMistral({
+  apiKey: process.env.MISTRAL_API_KEY,
+});
 
 /**
  * Creates a new agent for a chat thread with a given model.

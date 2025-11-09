@@ -14,7 +14,6 @@ import type * as emails_magicLink from "../emails/magicLink.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as models from "../models.js";
-import type * as prompt from "../prompt.js";
 import type * as settings from "../settings.js";
 import type * as users from "../users.js";
 
@@ -39,7 +38,6 @@ declare const fullApi: ApiFromModules<{
   emails: typeof emails;
   http: typeof http;
   models: typeof models;
-  prompt: typeof prompt;
   settings: typeof settings;
   users: typeof users;
 }>;
