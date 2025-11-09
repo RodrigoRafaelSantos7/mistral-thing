@@ -20,7 +20,6 @@ export const nanoid = customAlphabet(
   NANOID_LENGTH
 );
 
-// LCG (Linear Congruential Generator) constants
 const LCG_MULTIPLIER = 1_664_525;
 const LCG_INCREMENT = 1_013_904_223;
 const LCG_MODULUS_BASE = 2;
@@ -30,12 +29,11 @@ const LCG_MODULUS = LCG_MODULUS_BASE ** LCG_MODULUS_EXPONENT;
 export function seededRandom(seed: number): () => number {
   let state = seed;
   return (): number => {
-    // Constants for the LCG (these values are commonly used)
-    const a = LCG_MULTIPLIER; // Multiplier
-    const c = LCG_INCREMENT; // Increment
-    const m = LCG_MODULUS; // Modulus (2^32)
+    const a = LCG_MULTIPLIER;
+    const c = LCG_INCREMENT;
+    const m = LCG_MODULUS;
     state = (a * state + c) % m;
-    return state / m; // Normalize to [0, 1)
+    return state / m;
   };
 }
 
