@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
-import { loggedOutPath } from "@/paths";
+import { useAuth } from "@/hooks/use-auth";
 
 const LogoutDialog = ({ children }: { children: React.ReactNode }) => {
+  const { handleSignOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -32,18 +31,7 @@ const LogoutDialog = ({ children }: { children: React.ReactNode }) => {
           <Button onClick={() => setOpen(false)} variant="outline">
             Cancel
           </Button>
-          <Button
-            onClick={async () => {
-              await authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    router.push(loggedOutPath());
-                  },
-                },
-              });
-            }}
-            variant="destructive"
-          >
+          <Button onClick={handleSignOut} variant="destructive">
             Logout
           </Button>
         </DialogFooter>
