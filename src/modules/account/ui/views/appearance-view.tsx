@@ -4,7 +4,6 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
 import { useSettings } from "@/hooks/use-database";
 import { ModeToggle } from "@/modules/account/ui/components/mode-toggle";
 import { ThemeToggle } from "@/modules/account/ui/components/theme-toggle";
@@ -20,7 +19,7 @@ const AppearanceView = () => {
   }, [settings, setTheme]);
 
   if (!settings) {
-    return <Spinner />;
+    return null;
   }
 
   return (

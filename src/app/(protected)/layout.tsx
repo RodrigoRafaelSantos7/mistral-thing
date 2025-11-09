@@ -15,7 +15,7 @@ const ProtectedLayout = async ({ children }: { children: ReactNode }) => {
   const token = await getToken();
   const session = await fetchQuery(api.users.getSession, {}, { token });
 
-  if (!session) {
+  if (!(token && session)) {
     redirect(loginPath());
   }
 

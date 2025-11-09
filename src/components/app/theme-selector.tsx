@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -29,14 +28,9 @@ import { useSettings } from "@/hooks/use-database";
 import { cn } from "@/lib/utils";
 
 export function ThemeSelector() {
-  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const { settings, updateSettings } = useSettings();
   const { setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (settings) {
@@ -44,8 +38,8 @@ export function ThemeSelector() {
     }
   }, [settings, setTheme]);
 
-  if (!(mounted && settings)) {
-    return <Skeleton className="size-9" />;
+  if (!settings) {
+    return null;
   }
 
   const mode = settings.mode ?? "dark";
