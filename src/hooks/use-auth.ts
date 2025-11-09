@@ -1,7 +1,6 @@
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { logger } from "@/lib/logger";
-import { loggedOutPath } from "@/paths";
 
 const log = logger.child({ module: "useAuth" });
 
@@ -14,7 +13,12 @@ export const useAuth = () => {
     } catch (error) {
       log.error({ error }, "Failed to sign out");
     }
-    router.replace(loggedOutPath());
+
+    // Instead of redirecting, we refresh the page to clear the auth state.
+    // This works around the issue where the user might not manually refresh,
+    // and because the getSession query in the providers is non-reactive,
+    // a full page reload is required to ensure the auth state is cleared.
+    router.refresh();
   };
 
   return { handleSignOut };
