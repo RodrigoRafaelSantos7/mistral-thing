@@ -3,17 +3,16 @@
 import { Globe } from "lucide-react";
 import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
+import { useSessions } from "@/hooks/use-database";
 import { useSession } from "@/hooks/use-session";
 import { getUsername } from "@/lib/usernames";
-import { useSessionsContext } from "@/modules/account/providers/sessions-provider";
 import { UsernameForm } from "@/modules/account/ui/components/username-form";
 import { getDeviceIcon } from "@/modules/account/utils/get-device-icon";
 import { getDeviceInfo } from "@/modules/account/utils/get-device-info";
 import { SessionCard } from "../components/session-card";
 
 const Page = () => {
-  const context = useSessionsContext();
-  const sessions = context?.sessions;
+  const sessions = useSessions();
   const { data: session } = useSession();
 
   if (!session) {

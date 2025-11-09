@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const token = await getToken();
-  // Preload settings, models, and sessions in parallel for faster loading
   const [preloadedSettings, preloadedModels, preloadedSessions] =
     await Promise.all([
       preloadQuery(api.settings.get, {}, { token }),
