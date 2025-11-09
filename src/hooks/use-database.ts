@@ -1,12 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
+import { useModelsContext } from "@/components/providers/models-provider";
+import { useSessionsContext } from "@/components/providers/sessions-provider";
+import { useSettingsContext } from "@/components/providers/settings-provider";
+import { useUserContext } from "@/components/providers/user-provider";
 import { api } from "@/convex/_generated/api";
-import { useModelsContext } from "@/modules/account/providers/models-provider";
-import { useSessionsContext } from "@/modules/account/providers/sessions-provider";
-import { useSettingsContext } from "@/modules/account/providers/settings-provider";
 
 export function useSettings() {
-  // Try to use settings from context first (preloaded in account layout)
-  // Falls back to useQuery if context is not available (outside account pages)
   const context = useSettingsContext();
   const settingsFromQuery = useQuery(api.settings.get, {});
   const settings = context?.settings ?? settingsFromQuery;
@@ -57,5 +56,9 @@ export function useSessions() {
 }
 
 export function useUser() {
-  return useQuery(api.auth.getCurrentUser);
+  const context = useUserContext();
+  const userFromQuery = useQuery(api.auth.getCurrentUser);
+  const user = context?.user ?? userFromQuery;
+
+  return user;
 }
