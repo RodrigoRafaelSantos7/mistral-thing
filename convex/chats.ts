@@ -1,8 +1,9 @@
 import { createMistral } from "@ai-sdk/mistral";
-import { Agent } from "@convex-dev/agent";
+import { Agent, vStreamArgs } from "@convex-dev/agent";
+import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { api, components } from "./_generated/api";
-import { action, type GenericCtx, mutation } from "./_generated/server";
+import { action, type GenericCtx, mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 
 const mistral = createMistral({
@@ -74,7 +75,40 @@ export const sendMessageToAgent = action({
     const { thread } = await myAgent.continueThread(ctx, {
       threadId: args.threadId,
     });
-    const result = await thread.generateText({ prompt: args.prompt });
-    return result.text;
+
+    const result = await thread.streamText(
+      { prompt: args.prompt },
+      {
+        saveStreamDeltas: {
+          chunking: "word",
+        },
+      }
+    );
+
+    await result.consumeStream();
+  },
+});
+
+export const listThreadMessages = query({
+  args: {
+    threadId: v.string(),
+    paginationOpts: paginationOptsValidator,
+    streamArgs: vStreamArgs,
+  },
+  handler: async (ctx, args) => {
+    const paginated = await myAgent.listMessages(ctx, {
+      threadId: args.threadId,
+      paginationOpts: args.paginationOpts,
+    });
+
+    const streams = await myAgent.syncStreams(ctx, {
+      threadId: args.threadId,
+      streamArgs: args.streamArgs,
+    });
+
+    return {
+      ...paginated,
+      streams,
+    };
   },
 });
