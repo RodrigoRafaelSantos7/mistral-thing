@@ -4,6 +4,7 @@ import { useSessionsContext } from "@/components/providers/sessions-provider";
 import { useSettingsContext } from "@/components/providers/settings-provider";
 import { useUserContext } from "@/components/providers/user-provider";
 import { api } from "@/convex/_generated/api";
+import { useSession } from "@/hooks/use-session";
 
 export function useSettings() {
   const context = useSettingsContext();
@@ -49,7 +50,11 @@ export function useModels() {
 
 export function useSessions() {
   const context = useSessionsContext();
-  const sessionsFromQuery = useQuery(api.users.getAllSessions, {});
+  const { data: session } = useSession();
+  const sessionsFromQuery = useQuery(
+    api.users.getAllSessions,
+    session ? {} : "skip"
+  );
   const sessions = context?.sessions ?? sessionsFromQuery;
 
   return sessions;
