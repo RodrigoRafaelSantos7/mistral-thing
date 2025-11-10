@@ -2,32 +2,11 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const models = v.union(
-  // Open Mistral Models
-  v.literal("mistral-small-latest"),
-  v.literal("devstral-small-2507"),
-  v.literal("voxtral-small-latest"),
-  v.literal("voxtral-mini-latest"),
-  v.literal("pixtral-large-latest"),
-  v.literal("pixtral-12b-2409"),
-  v.literal("open-mistral-nemo"),
-  v.literal("open-mistral-7b"),
-  v.literal("open-mixtral-8x7b"),
-  v.literal("open-mixtral-8x22b"),
-  v.literal("ministral-8b-latest"),
-  v.literal("ministral-3b-latest"),
-
-  // Premier Models
   v.literal("mistral-medium-latest"),
-  v.literal("magistral-medium-latest"),
-  v.literal("devstral-medium-2507"),
+  v.literal("mistral-small-latest"),
   v.literal("codestral-latest"),
-  v.literal("mistral-ocr-latest"),
-  v.literal("voxtral-mini-latest"),
-  v.literal("magistral-small-latest"),
-  v.literal("mistral-moderation-latest"),
-  v.literal("codestral-embed-2505"),
-  v.literal("mistral-embed"),
-  v.literal("mistral-large-latest")
+  v.literal("magistral-medium-latest"),
+  v.literal("magistral-small-latest")
 );
 
 export const themes = v.union(
@@ -45,33 +24,28 @@ const capabilities = v.union(
   v.literal("text-output"),
   v.literal("image-input"),
   v.literal("image-output"),
-  v.literal("voice-input"),
-  v.literal("voice-output"),
-  v.literal("audio-input"),
-  v.literal("audio-output"),
   v.literal("reasoning-output")
 );
 
 const icons = v.union(
-  v.literal("codestral-embed"),
   v.literal("codestral"),
-  v.literal("devstral"),
-  v.literal("embed"),
-  v.literal("large"),
   v.literal("magistral"),
   v.literal("medium"),
-  v.literal("ministral"),
-  v.literal("nemo"),
-  v.literal("ocr"),
-  v.literal("pixtral"),
-  v.literal("small"),
-  v.literal("voxtral")
+  v.literal("small")
+);
+
+export const modes = v.union(v.literal("light"), v.literal("dark"));
+
+export const status = v.union(
+  v.literal("ready"),
+  v.literal("streaming"),
+  v.literal("submitted")
 );
 
 const schema = defineSchema({
   settings: defineTable({
     userId: v.string(),
-    mode: v.union(v.literal("light"), v.literal("dark")),
+    mode: modes,
     theme: themes,
     nickname: v.optional(v.string()),
     biography: v.optional(v.string()),
@@ -86,7 +60,14 @@ const schema = defineSchema({
     capabilities: v.array(capabilities),
     icon: icons,
     credits: v.number(),
-  }),
+  }).index("by_model", ["model"]),
+  thread: defineTable({
+    userId: v.string(),
+    title: v.optional(v.string()),
+    status: v.optional(status),
+    streamId: v.optional(v.string()),
+    updatedAt: v.number(),
+  }).index("by_userId_updatedAt", ["userId", "updatedAt"]),
 });
 
 export default schema;
