@@ -35,14 +35,14 @@ function getCapabilityIcon(capability: Capability) {
   const baseType = capability.split("-")[0];
 
   switch (baseType) {
+    case "reasoning":
+      return <Reasoning />;
     case "text":
       return <TextIcon />;
     case "image":
       return <Image />;
     case "voice":
       return <Voice />;
-    case "reasoning":
-      return <Reasoning />;
     default:
       return <TextIcon />;
   }

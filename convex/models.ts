@@ -73,8 +73,8 @@ export const seedModels = mutation({
         capabilities: [
           "text-input" as const,
           "image-input" as const,
-          "text-output" as const,
           "reasoning-output" as const,
+          "text-output" as const,
         ],
         icon: "magistral" as const,
         credits: 1,
