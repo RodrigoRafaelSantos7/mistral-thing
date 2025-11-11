@@ -5,8 +5,6 @@ export const metadata: Metadata = {
     "Get access to AI models from Mistral. Nearly unlimited tier is free!",
 };
 
-const Layout = async ({ children }: { children: React.ReactNode }) => (
-  <>{children}</>
-);
+const Layout = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
 export default Layout;
