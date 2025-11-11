@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 import { modes, themes } from "./schema";
 
@@ -72,5 +72,37 @@ export const update = mutation({
     }
 
     return await ctx.db.patch(settings._id, args);
+  },
+});
+
+export const getForThread = internalQuery({
+  args: {
+    userId: v.string(),
+  },
+  returns: v.union(
+    v.object({
+      modelId: v.string(),
+      nickname: v.optional(v.string()),
+      biography: v.optional(v.string()),
+      instructions: v.optional(v.string()),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const settings = await ctx.db
+      .query("settings")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    if (!settings) {
+      return null;
+    }
+
+    return {
+      modelId: settings.modelId,
+      nickname: settings.nickname,
+      biography: settings.biography,
+      instructions: settings.instructions,
+    };
   },
 });

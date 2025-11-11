@@ -53,6 +53,7 @@ const schema = defineSchema({
     ),
     content: v.string(),
     updatedAt: v.number(),
+    streamId: v.optional(v.string()),
   }).index("by_threadId_updatedAt", ["threadId", "updatedAt"]),
   thread: defineTable({
     userId: v.string(),

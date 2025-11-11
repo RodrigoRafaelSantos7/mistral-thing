@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowUpIcon, EditIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { ScrollToBottomButton } from "@/components/thread/scroll-to-bottom-button";
 import { Button } from "@/components/ui/button";
 import { PromptInput, PromptInputTextarea } from "@/components/ui/prompt-input";
@@ -9,6 +10,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@/hooks/use-database";
 import { useParamsThreadId } from "@/hooks/use-params-thread-id";
+import { env, getConvexSiteUrl } from "@/lib/env";
 import { getUsername } from "@/lib/usernames";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +21,7 @@ export function MultiModalInput() {
   const user = useUser();
   const threadId = useParamsThreadId() as Id<"thread"> | undefined;
   const createMessage = useMutation(api.threads.createMessage);
+  const createStream = useMutation(api.ai.streams.createStream);
 
   useQuery(api.threads.getThreadById, threadId ? { threadId } : "skip");
 
@@ -35,14 +38,39 @@ export function MultiModalInput() {
         content: trimmedInput,
       });
 
+      const { messageId, streamId } = await createStream({
+        threadId,
+      });
+
+      const convexSiteUrl = getConvexSiteUrl(env.NEXT_PUBLIC_CONVEX_URL);
+      const response = await fetch(`${convexSiteUrl}/chat-stream`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          streamId,
+          messageId,
+          threadId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to start stream: ${response.status} ${response.statusText}`
+        );
+      }
+
       // Reset form state
       setInput("");
       setEditingMessageId(null);
     } catch (error) {
-      // Error handling - could show toast here if needed
-      if (error instanceof Error) {
-        // Handle error silently or show user-friendly message
-      }
+      // Error handling with user-friendly feedback
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send message. Please try again.";
+      toast.error(errorMessage);
     }
   };
 

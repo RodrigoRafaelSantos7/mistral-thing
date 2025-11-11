@@ -19,6 +19,7 @@ export function MessageList({ thread }: { thread: Thread }) {
     .filter((id): id is NonNullable<typeof id> => id !== undefined);
 
   const isStreaming = thread.status === "streaming";
+
   const instance = useStickToBottom({
     initial: "instant",
     resize: isStreaming ? "smooth" : "instant",
@@ -48,7 +49,7 @@ export function MessageList({ thread }: { thread: Thread }) {
 
   return (
     <StickToBottom
-      className="absolute top-0 right-0 bottom-4 left-0"
+      className="absolute top-0 right-0 bottom-0 left-0"
       instance={instance}
     >
       <Virtualizer
@@ -60,8 +61,8 @@ export function MessageList({ thread }: { thread: Thread }) {
         {messageIds.map((id) => (
           <MessageItem id={id} key={id} />
         ))}
-        <MultiModalInput />
       </Virtualizer>
+      <MultiModalInput />
     </StickToBottom>
   );
 }

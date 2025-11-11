@@ -6,6 +6,7 @@ export type Message = {
   role: "user" | "assistant" | "tool" | "system";
   content: string;
   updatedAt: number;
+  streamId?: string;
 };
 
 export type Thread = {

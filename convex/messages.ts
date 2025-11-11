@@ -8,7 +8,7 @@ export const getMessageById = query({
   },
   returns: v.object({
     _id: v.id("message"),
-    _creationTime: v.number(),
+    _creationTime: v.float64(),
     threadId: v.id("thread"),
     role: v.union(
       v.literal("user"),
@@ -17,7 +17,8 @@ export const getMessageById = query({
       v.literal("system")
     ),
     content: v.string(),
-    updatedAt: v.number(),
+    updatedAt: v.float64(),
+    streamId: v.optional(v.string()),
     hasNextMessage: v.boolean(),
     hasPreviousMessage: v.boolean(),
   }),

@@ -10,6 +10,8 @@
 
 import type * as ai_chat from "../ai/chat.js";
 import type * as ai_prompt from "../ai/prompt.js";
+import type * as ai_streamHttp from "../ai/streamHttp.js";
+import type * as ai_streams from "../ai/streams.js";
 import type * as auth from "../auth.js";
 import type * as emails from "../emails.js";
 import type * as emails_magicLink from "../emails/magicLink.js";
@@ -29,6 +31,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   "ai/chat": typeof ai_chat;
   "ai/prompt": typeof ai_prompt;
+  "ai/streamHttp": typeof ai_streamHttp;
+  "ai/streams": typeof ai_streams;
   auth: typeof auth;
   emails: typeof emails;
   "emails/magicLink": typeof emails_magicLink;
@@ -5127,6 +5131,41 @@ export declare const components: {
           null
         >;
       };
+    };
+  };
+  persistentTextStreaming: {
+    lib: {
+      addChunk: FunctionReference<
+        "mutation",
+        "internal",
+        { final: boolean; streamId: string; text: string },
+        any
+      >;
+      createStream: FunctionReference<"mutation", "internal", {}, any>;
+      getStreamStatus: FunctionReference<
+        "query",
+        "internal",
+        { streamId: string },
+        "pending" | "streaming" | "done" | "error" | "timeout"
+      >;
+      getStreamText: FunctionReference<
+        "query",
+        "internal",
+        { streamId: string },
+        {
+          status: "pending" | "streaming" | "done" | "error" | "timeout";
+          text: string;
+        }
+      >;
+      setStreamStatus: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          status: "pending" | "streaming" | "done" | "error" | "timeout";
+          streamId: string;
+        },
+        any
+      >;
     };
   };
 };

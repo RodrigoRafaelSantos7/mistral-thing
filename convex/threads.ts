@@ -1,10 +1,10 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 
 const messageValidator = v.object({
   _id: v.id("message"),
-  _creationTime: v.number(),
+  _creationTime: v.float64(),
   threadId: v.id("thread"),
   role: v.union(
     v.literal("user"),
@@ -13,12 +13,13 @@ const messageValidator = v.object({
     v.literal("system")
   ),
   content: v.string(),
-  updatedAt: v.number(),
+  updatedAt: v.float64(),
+  streamId: v.optional(v.string()),
 });
 
 const threadValidator = v.object({
   _id: v.id("thread"),
-  _creationTime: v.number(),
+  _creationTime: v.float64(),
   userId: v.string(),
   title: v.optional(v.string()),
   status: v.union(
@@ -26,7 +27,7 @@ const threadValidator = v.object({
     v.literal("streaming"),
     v.literal("submitted")
   ),
-  updatedAt: v.number(),
+  updatedAt: v.float64(),
   messages: v.array(messageValidator),
 });
 
@@ -266,5 +267,29 @@ export const createMessage = mutation({
     });
 
     return messageId;
+  },
+});
+
+export const getThreadForStream = internalQuery({
+  args: {
+    threadId: v.id("thread"),
+  },
+  returns: v.object({
+    userId: v.string(),
+  }),
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId);
+
+    if (!thread) {
+      throw new ConvexError({
+        code: 404,
+        message: "Thread not found",
+        severity: "high",
+      });
+    }
+
+    return {
+      userId: thread.userId,
+    };
   },
 });
