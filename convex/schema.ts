@@ -68,6 +68,11 @@ const schema = defineSchema({
     streamId: v.optional(v.string()),
     updatedAt: v.number(),
   }).index("by_userId_updatedAt", ["userId", "updatedAt"]),
+  message: defineTable({
+    threadId: v.id("thread"),
+    userId: v.string(),
+    message: v.any(),
+    updatedAt: v.number(),
+  }).index("by_threadId_updatedAt", ["threadId", "updatedAt"]),
 });
-
 export default schema;

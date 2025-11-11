@@ -114,6 +114,44 @@ export const updateThread = mutation({
 export const deleteThread = mutation({
   args: { threadId: v.id("thread") },
   handler: async (ctx, args) => {
+    const user = await authComponent.getAuthUser(ctx);
+
+    if (!user) {
+      throw new ConvexError({
+        code: 401,
+        message: "User not found. Please login to continue.",
+        severity: "high",
+      });
+    }
+    const thread = await ctx.db.get(args.threadId);
+
+    if (!thread) {
+      throw new ConvexError({
+        code: 404,
+        message: "Thread not found.",
+        severity: "high",
+      });
+    }
+
+    if (thread.userId !== user._id) {
+      throw new ConvexError({
+        code: 403,
+        message: "You are not authorized to delete this thread.",
+        severity: "high",
+      });
+    }
+
+    const messages = await ctx.db
+      .query("message")
+      .withIndex("by_threadId_updatedAt", (q) =>
+        q.eq("threadId", args.threadId)
+      )
+      .collect();
+
+    for (const message of messages) {
+      await ctx.db.delete(message._id);
+    }
+
     await ctx.db.delete(args.threadId);
   },
 });
