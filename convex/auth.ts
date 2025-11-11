@@ -55,9 +55,10 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
           theme: "default",
           modelId: "mistral-small-latest",
           pinnedModels: [
-            "mistral-medium-latest",
-            "codestral-latest",
+            "magistral-small-latest",
+            "devstral-small-latest",
             "mistral-small-latest",
+            "open-mistral-nemo",
           ],
         });
       },

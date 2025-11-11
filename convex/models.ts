@@ -75,28 +75,14 @@ export const seedModels = internalAction({
     }
 
     for (const model of mistralModels.data) {
-      // Skip deprecated models
-      if (model.deprecation != null) {
-        continue;
-      }
-
-      // Only include models with "latest" in their ID
-      if (!model.id.includes("latest")) {
-        continue;
-      }
-
       if (
         !(
-          model.id.includes("magistral") ||
-          model.id.includes("ministral") ||
-          model.id.includes("codestral") ||
-          model.id.includes("mistral")
+          model.id === "magistral-small-latest" ||
+          model.id === "devstral-small-latest" ||
+          model.id === "mistral-small-latest" ||
+          model.id === "open-mistral-nemo"
         )
       ) {
-        continue;
-      }
-
-      if (model.id.includes("ocr") || model.id.includes("moderation")) {
         continue;
       }
 

@@ -19,7 +19,7 @@ export function getModelIcon(modelId: string): ModelIconType | null {
   if (modelId.includes("ministral")) {
     return "ministral";
   }
-  if (modelId.includes("tiny")) {
+  if (modelId.includes("nemo")) {
     return "nemo";
   }
   if (modelId.includes("magistral")) {
