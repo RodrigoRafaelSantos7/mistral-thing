@@ -13,12 +13,21 @@
     "next": "16.0.1"
   },
   "devDependencies": {
-    "babel-plugin-react-compiler": "1.0.0",
-    "typescript": "^5",
+    "@biomejs/biome": "2.3.4",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "babel-plugin-react-compiler": "1.0.0",
+    "lefthook": "^2.0.3",
+    "lint-staged": "^16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "ultracite": "6.3.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "bun x ultracite fix"
+    ]
   }
 }
