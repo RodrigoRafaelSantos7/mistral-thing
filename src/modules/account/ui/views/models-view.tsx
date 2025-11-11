@@ -7,7 +7,9 @@ import { Section } from "@/components/ui/section";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { useModels, useSettings } from "@/hooks/use-database";
-import type { Model } from "@/types/models";
+import { convertModelCapabilitiesToCapabilities } from "@/lib/capabilities";
+import { getModelDisplayName } from "@/lib/display-name";
+import { getModelIcon } from "@/lib/icons";
 
 const ModelsView = () => {
   const { settings, updateSettings } = useSettings();
@@ -25,85 +27,98 @@ const ModelsView = () => {
   const activeModelCount = currentPinned.length;
 
   const handleModelToggle = (
-    model: Model,
-    name: string,
+    modelId: string,
+    name: string | null,
     isEnabled: boolean
   ) => {
-    let updatedPinned: Model[] = [];
+    let updatedPinned: string[] = [];
 
     if (isEnabled) {
-      updatedPinned = [...currentPinned, model];
-    } else {
-      if (activeModelCount <= 1) {
+      if (currentPinned.includes(modelId)) {
         return;
       }
-      updatedPinned = currentPinned.filter((m) => m !== model);
+      updatedPinned = [...currentPinned, modelId];
+    } else {
+      if (activeModelCount <= 1) {
+        toast.error("You must have at least one pinned model");
+        return;
+      }
+      updatedPinned = currentPinned.filter((id: string) => id !== modelId);
     }
 
     updateSettings({
       pinnedModels: updatedPinned,
     });
 
-    toast.success(`${name} ${isEnabled ? "pinned" : "unpinned"}`);
+    toast.success(`${name || modelId} ${isEnabled ? "pinned" : "unpinned"}`);
   };
 
-  const isPinned = (model: Model) => settings.pinnedModels.includes(model);
+  const isPinned = (modelId: string) => currentPinned.includes(modelId);
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <title>Models | Mistral Thing</title>
       <Section
         description="Toggle which models appear in your model selector"
         title="Available Models"
       >
         <div className="space-y-3">
-          {allModels?.map((model) => (
-            <div
-              className="flex flex-col overflow-hidden rounded-lg border bg-card backdrop-blur-md"
-              key={model._id}
-            >
-              <div className="flex flex-1 gap-4 border-b p-4">
-                <div>
-                  <ModelIcon
-                    className="size-6 fill-primary"
-                    icon={model.icon}
-                  />
-                </div>
-                <div className="flex flex-1 gap-1">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{model.name}</span>
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      {model.description}
-                    </p>
+          {allModels?.map((model) => {
+            const icon = getModelIcon(model.id);
+            const capabilities = convertModelCapabilitiesToCapabilities(
+              model.capabilities,
+              model.id
+            );
+            return (
+              <div
+                className="flex flex-col overflow-hidden rounded-lg border bg-card backdrop-blur-md"
+                key={model.id}
+              >
+                <div className="flex flex-1 gap-4 border-b p-4">
+                  <div>
+                    {icon && (
+                      <ModelIcon className="size-6 fill-primary" icon={icon} />
+                    )}
                   </div>
-                  <Switch
-                    checked={isPinned(model.model)}
-                    disabled={isPinned(model.model) && activeModelCount <= 1}
-                    onCheckedChange={(checked) =>
-                      handleModelToggle(model.model, model.name, checked)
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between gap-3 bg-sidebar p-4">
-                <div>
-                  {model.capabilities && model.capabilities.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <CapabilityBadges capabilities={model.capabilities} />
+                  <div className="flex flex-1 gap-1">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">
+                          {getModelDisplayName(model.id, model.name)}
+                        </span>
+                      </div>
+                      {model.description && (
+                        <p className="text-muted-foreground text-sm">
+                          {model.description}
+                        </p>
+                      )}
                     </div>
-                  )}
+                    <Switch
+                      checked={isPinned(model.id)}
+                      className="ml-auto"
+                      disabled={isPinned(model.id) && activeModelCount <= 1}
+                      onCheckedChange={(checked) =>
+                        handleModelToggle(
+                          model.id,
+                          getModelDisplayName(model.id, model.name),
+                          checked
+                        )
+                      }
+                    />
+                  </div>
                 </div>
 
-                <div className="text-muted-foreground text-xs">
-                  {model.credits} credit
-                  {Number(model.credits ?? 0) > 1 ? "s" : ""}/message
+                <div className="flex items-center justify-between gap-3 bg-sidebar p-4">
+                  <div>
+                    {capabilities && capabilities.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <CapabilityBadges capabilities={capabilities} />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Section>
     </div>

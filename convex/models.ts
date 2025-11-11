@@ -1,15 +1,36 @@
-import { ConvexError } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { Mistral } from "@mistralai/mistralai";
+import { ConvexError, v } from "convex/values";
+import { internal } from "./_generated/api";
+import { internalAction, internalMutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 
+const mistral = new Mistral({
+  apiKey: process.env.MISTRAL_API_KEY,
+});
+
 /**
- * Retrieves all models with authorization checks.
+ * Retrieves all models from the database with authorization checks.
  *
- * @returns All models
+ * @returns All models from the models table
  * @throws {ConvexError} 401 if user not authenticated
  */
 export const getAll = query({
   args: {},
+  returns: v.array(
+    v.object({
+      id: v.string(),
+      name: v.union(v.string(), v.null()),
+      description: v.union(v.string(), v.null()),
+      capabilities: v.object({
+        completionChat: v.optional(v.boolean()),
+        completionFim: v.optional(v.boolean()),
+        functionCalling: v.optional(v.boolean()),
+        fineTuning: v.optional(v.boolean()),
+        vision: v.optional(v.boolean()),
+        classification: v.optional(v.boolean()),
+      }),
+    })
+  ),
   handler: async (ctx) => {
     const user = await authComponent.getAuthUser(ctx);
 
@@ -23,89 +44,121 @@ export const getAll = query({
 
     const models = await ctx.db.query("model").collect();
 
-    return models;
+    return models.map((model) => ({
+      id: model.modelId,
+      name: model.name,
+      description: model.description,
+      capabilities: model.capabilities,
+    }));
   },
 });
 
-export const seedModels = mutation({
+/**
+ * Seeds the models table with all available models from Mistral API.
+ * This function fetches models from Mistral and upserts them into the database.
+ * Only includes models that:
+ * - Are not deprecated (deprecation field is null or undefined)
+ * - Have "latest" in their model ID
+ */
+export const seedModels = internalAction({
+  args: {},
+  returns: v.null(),
   handler: async (ctx) => {
-    const modelsArray = [
-      {
-        name: "Codestral",
-        model: "codestral-latest" as const,
-        description:
-          "Mistral's cutting-edge language model for coding released end of July 2025, Codestral specializes in low-latency, high-frequency tasks such as fill-in-the-middle (FIM), code correction and test generation.",
-        capabilities: ["text-input" as const, "text-output" as const],
-        icon: "codestral" as const,
-        credits: 1,
-      },
-      {
-        name: "Mistral Medium 3.1",
-        model: "mistral-medium-latest" as const,
-        description:
-          "Mistral's frontier-class multimodal model released August 2025. Improving tone and performance. This model requires an account to use.",
-        capabilities: [
-          "text-input" as const,
-          "image-input" as const,
-          "text-output" as const,
-        ],
-        icon: "medium" as const,
-        credits: 1,
-      },
-      {
-        name: "Mistral Small 3.2",
-        model: "mistral-small-latest" as const,
-        description:
-          "Mistral's update to their previous small model, released June 2025. Ideal for quick tasks and small conversations. This model requires an account to use.",
-        capabilities: [
-          "text-input" as const,
-          "image-input" as const,
-          "text-output" as const,
-        ],
-        icon: "small" as const,
-        credits: 1,
-      },
-      {
-        name: "Magistral Medium 1.2",
-        model: "magistral-medium-latest" as const,
-        description:
-          "Mistral's frontier-class multimodal reasoning model update of September 2025. Ideal for complex tasks and conversations. Requires an account to use.",
-        capabilities: [
-          "text-input" as const,
-          "image-input" as const,
-          "reasoning-output" as const,
-          "text-output" as const,
-        ],
-        icon: "magistral" as const,
-        credits: 1,
-      },
-      {
-        name: "Magistral Small 1.1",
-        model: "magistral-small-latest" as const,
-        description:
-          "Mistral's small-scale multimodal reasoning model update of September 2025. Ideal for complex tasks and conversations. Requires an account to use.",
-        capabilities: [
-          "text-input" as const,
-          "image-input" as const,
-          "reasoning-output" as const,
-          "text-output" as const,
-        ],
-        icon: "magistral" as const,
-        credits: 1,
-      },
-    ];
+    const mistralModels = await mistral.models.list();
 
-    await ctx.db
-      .query("model")
-      .collect()
-      .then(async (existingModels) => {
-        for (const model of existingModels) {
-          await ctx.db.delete(model._id);
-        }
+    if (!mistralModels.data) {
+      throw new ConvexError({
+        code: 500,
+        message: "Failed to fetch models from Mistral API.",
+        severity: "high",
       });
-
-    for (const model of modelsArray) {
-      await ctx.db.insert("model", model);
     }
+
+    for (const model of mistralModels.data) {
+      // Skip deprecated models
+      if (model.deprecation != null) {
+        continue;
+      }
+
+      // Only include models with "latest" in their ID
+      if (!model.id.includes("latest")) {
+        continue;
+      }
+
+      if (
+        !(
+          model.id.includes("magistral") ||
+          model.id.includes("ministral") ||
+          model.id.includes("codestral") ||
+          model.id.includes("mistral")
+        )
+      ) {
+        continue;
+      }
+
+      if (model.id.includes("ocr") || model.id.includes("moderation")) {
+        continue;
+      }
+
+      await ctx.runMutation(internal.models.upsertModel, {
+        modelId: model.id,
+        name: model.name ?? null,
+        description: model.description ?? null,
+        capabilities: {
+          completionChat: model.capabilities?.completionChat,
+          completionFim: model.capabilities?.completionFim,
+          functionCalling: model.capabilities?.functionCalling,
+          fineTuning: model.capabilities?.fineTuning,
+          vision: model.capabilities?.vision,
+          classification: model.capabilities?.classification,
+        },
+      });
+    }
+
+    return null;
+  },
+});
+
+/**
+ * Upserts a model into the models table.
+ * Updates the model if it exists, otherwise inserts a new one.
+ */
+export const upsertModel = internalMutation({
+  args: {
+    modelId: v.string(),
+    name: v.union(v.string(), v.null()),
+    description: v.union(v.string(), v.null()),
+    capabilities: v.object({
+      completionChat: v.optional(v.boolean()),
+      completionFim: v.optional(v.boolean()),
+      functionCalling: v.optional(v.boolean()),
+      fineTuning: v.optional(v.boolean()),
+      vision: v.optional(v.boolean()),
+      classification: v.optional(v.boolean()),
+    }),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const existingModel = await ctx.db
+      .query("model")
+      .withIndex("by_modelId", (q) => q.eq("modelId", args.modelId))
+      .first();
+
+    if (existingModel) {
+      await ctx.db.patch(existingModel._id, {
+        name: args.name,
+        description: args.description,
+        capabilities: args.capabilities,
+      });
+    } else {
+      await ctx.db.insert("model", {
+        modelId: args.modelId,
+        name: args.name,
+        description: args.description,
+        capabilities: args.capabilities,
+      });
+    }
+
+    return null;
   },
 });

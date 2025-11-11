@@ -20,29 +20,30 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Doc } from "@/convex/_generated/dataModel";
 import { useModels, useSettings } from "@/hooks/use-database";
+import { convertModelCapabilitiesToCapabilities } from "@/lib/capabilities";
+import { getModelDisplayName } from "@/lib/display-name";
+import { getModelIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { ModelIcon as ModelIconType } from "@/types/model-icons";
 import type { Model } from "@/types/models";
 
 export function ModelSelector() {
   const [open, setOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [hoveredModel, setHoveredModel] = useState<Doc<"model"> | null>(null);
+  const [hoveredModel, setHoveredModel] = useState<Model | null>(null);
   const allModels = useModels();
   const { settings, updateSettings } = useSettings();
   const pinnedModelIds = settings?.pinnedModels || [];
 
   const currentModel = settings?.modelId
-    ? allModels?.find((m) => m.model === settings.modelId)
+    ? allModels?.find((m) => m.id === settings.modelId)
     : null;
 
   const models = allModels
-    ? allModels.filter((model) => pinnedModelIds.includes(model.model))
+    ? allModels.filter((model) => pinnedModelIds.includes(model.id))
     : [];
   const otherModels = allModels
-    ? allModels.filter((model) => !pinnedModelIds.includes(model.model))
+    ? allModels.filter((model) => !pinnedModelIds.includes(model.id))
     : [];
 
   useEffect(() => {
@@ -52,20 +53,20 @@ export function ModelSelector() {
     }
   }, [open]);
 
-  const handleSelectModel = (model: Doc<"model">) => {
+  const handleSelectModel = (model: Model) => {
     setOpen(false);
     updateSettings({
-      modelId: model.model,
+      modelId: model.id,
     });
   };
 
-  const handleTogglePin = (modelId: Model, shouldPin: boolean) => {
+  const handleTogglePin = (modelId: string, shouldPin: boolean) => {
     if (!settings) {
       return;
     }
     const current = settings.pinnedModels || [];
     const activeModelCount = current.length;
-    let updated: Model[];
+    let updated: string[];
     if (shouldPin) {
       if (current.includes(modelId)) {
         toast.error("Model already pinned");
@@ -87,14 +88,19 @@ export function ModelSelector() {
       <PopoverTrigger asChild>
         <Button aria-expanded={open} variant="ghost">
           <div className="flex flex-1 items-center gap-2">
-            {currentModel && (
-              <ModelIcon
-                className="fill-primary"
-                icon={currentModel.icon as ModelIconType}
-              />
-            )}
+            <Activity mode={currentModel ? "visible" : "hidden"}>
+              {currentModel &&
+                (() => {
+                  const icon = getModelIcon(currentModel.id);
+                  return icon ? (
+                    <ModelIcon className="fill-primary" icon={icon} />
+                  ) : null;
+                })()}
+            </Activity>
             <span className="hidden truncate md:block">
-              {currentModel?.name}
+              {currentModel
+                ? getModelDisplayName(currentModel.id, currentModel.name)
+                : null}
             </span>
           </div>
           <ChevronsUpDown className="opacity-50" />
@@ -110,99 +116,118 @@ export function ModelSelector() {
             <CommandEmpty>No model found.</CommandEmpty>
             <Activity mode={showAll ? "hidden" : "visible"}>
               <CommandGroup>
-                {models?.map((model) => (
-                  <CommandItem
-                    key={model._id}
-                    onMouseEnter={() => setHoveredModel(model)}
-                    onSelect={() => handleSelectModel(model)}
-                    value={`${model.name} ${model.description}`}
-                  >
-                    <span className="flex flex-1 items-center gap-2">
-                      {model.icon && (
-                        <ModelIcon
-                          className="fill-primary"
-                          icon={model.icon as ModelIconType}
-                        />
-                      )}
-                      <span className="truncate">{model.name}</span>
-                    </span>
-                    <CapabilityBadges capabilities={model.capabilities ?? []} />
-                  </CommandItem>
-                ))}
+                {models?.map((model) => {
+                  const icon = getModelIcon(model.id);
+                  return (
+                    <CommandItem
+                      key={model.id}
+                      onMouseEnter={() => setHoveredModel(model)}
+                      onSelect={() => handleSelectModel(model)}
+                      value={`${getModelDisplayName(model.id, model.name)} ${model.description ?? ""}`}
+                    >
+                      <span className="flex flex-1 items-center gap-2">
+                        {icon && (
+                          <ModelIcon className="fill-primary" icon={icon} />
+                        )}
+                        <span className="truncate">
+                          {getModelDisplayName(model.id, model.name)}
+                        </span>
+                      </span>
+                      <CapabilityBadges
+                        capabilities={convertModelCapabilitiesToCapabilities(
+                          model.capabilities,
+                          model.id
+                        )}
+                      />
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </Activity>
 
             <Activity mode={showAll ? "visible" : "hidden"}>
               <CommandGroup heading="Pinned Models">
-                {models?.map((model) => (
-                  <CommandItem
-                    key={`pinned-${model._id}`}
-                    onMouseEnter={() => setHoveredModel(model)}
-                    onSelect={() => handleSelectModel(model)}
-                    value={`${model.name}`}
-                  >
-                    <span className="flex flex-1 items-center gap-2">
-                      {model.icon && (
-                        <ModelIcon
-                          className="fill-primary"
-                          icon={model.icon as ModelIconType}
-                        />
-                      )}
-                      <span className="truncate">{model.name}</span>
-                    </span>
-                    <CapabilityBadges capabilities={model.capabilities} />
-                    <div className="flex items-center gap-2">
-                      <Button
-                        aria-label="Unpin model"
-                        className="size-5"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTogglePin(model.model, false);
-                        }}
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <PinOff className="size-3 opacity-70" />
-                      </Button>
-                    </div>
-                  </CommandItem>
-                ))}
+                {models?.map((model) => {
+                  const icon = getModelIcon(model.id);
+                  const displayName = getModelDisplayName(model.id, model.name);
+                  return (
+                    <CommandItem
+                      key={`pinned-${model.id}`}
+                      onMouseEnter={() => setHoveredModel(model)}
+                      onSelect={() => handleSelectModel(model)}
+                      value={displayName}
+                    >
+                      <span className="flex flex-1 items-center gap-2">
+                        {icon && (
+                          <ModelIcon className="fill-primary" icon={icon} />
+                        )}
+                        <span className="truncate">{displayName}</span>
+                      </span>
+                      <CapabilityBadges
+                        capabilities={convertModelCapabilitiesToCapabilities(
+                          model.capabilities,
+                          model.id
+                        )}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          aria-label="Unpin model"
+                          className="size-5"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTogglePin(model.id, false);
+                          }}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <PinOff className="size-3 opacity-70" />
+                        </Button>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup heading="Other Models">
-                {otherModels?.map((model) => (
-                  <CommandItem
-                    key={`other-${model._id}`}
-                    onMouseEnter={() => setHoveredModel(model)}
-                    onSelect={() => handleSelectModel(model)}
-                    value={`${model.name}`}
-                  >
-                    <span className="flex flex-1 items-center gap-2">
-                      {model.icon && (
-                        <ModelIcon
-                          className="fill-primary"
-                          icon={model.icon as ModelIconType}
-                        />
-                      )}
-                      <span className="truncate">{model.name}</span>
-                    </span>
-                    <CapabilityBadges capabilities={model.capabilities} />
-                    <div className="flex items-center gap-2">
-                      <Button
-                        aria-label="Pin model"
-                        className="size-5"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTogglePin(model.model, true);
-                        }}
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <Pin className="size-3 opacity-70" />
-                      </Button>
-                    </div>
-                  </CommandItem>
-                ))}
+                {otherModels?.map((model) => {
+                  const icon = getModelIcon(model.id);
+                  const displayName = getModelDisplayName(model.id, model.name);
+                  return (
+                    <CommandItem
+                      key={`other-${model.id}`}
+                      onMouseEnter={() => setHoveredModel(model)}
+                      onSelect={() => handleSelectModel(model)}
+                      value={displayName}
+                    >
+                      <span className="flex flex-1 items-center gap-2">
+                        {icon && (
+                          <ModelIcon className="fill-primary" icon={icon} />
+                        )}
+                        <span className="truncate">{displayName}</span>
+                      </span>
+                      <CapabilityBadges
+                        capabilities={convertModelCapabilitiesToCapabilities(
+                          model.capabilities,
+                          model.id
+                        )}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          aria-label="Pin model"
+                          className="size-5"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTogglePin(model.id, true);
+                          }}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Pin className="size-3 opacity-70" />
+                        </Button>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </Activity>
           </CommandList>
@@ -222,14 +247,26 @@ export function ModelSelector() {
           <Activity mode={hoveredModel ? "visible" : "hidden"}>
             <div className="relative flex w-64 flex-col gap-4 overflow-hidden rounded-md border border-foreground/10 before:absolute before:inset-0 before:z-[-1] before:bg-sidebar/50 before:backdrop-blur-md">
               <div className="flex items-center gap-2 px-2 pt-2">
-                <ModelIcon
-                  className="size-4 fill-primary"
-                  icon={hoveredModel?.icon as ModelIconType}
-                />
-                <span className="text-sm">{hoveredModel?.name}</span>
+                {hoveredModel &&
+                  (() => {
+                    const icon = getModelIcon(hoveredModel.id);
+                    return icon ? (
+                      <ModelIcon className="size-4 fill-primary" icon={icon} />
+                    ) : null;
+                  })()}
+                <span className="text-sm">
+                  {hoveredModel
+                    ? getModelDisplayName(hoveredModel.id, hoveredModel.name)
+                    : null}
+                </span>
               </div>
               <div className="flex items-center gap-2 px-2">
-                <CapabilityBadges capabilities={hoveredModel?.capabilities} />
+                <CapabilityBadges
+                  capabilities={convertModelCapabilitiesToCapabilities(
+                    hoveredModel?.capabilities,
+                    hoveredModel?.id ?? ""
+                  )}
+                />
               </div>
               <div className="px-2 pb-2 text-muted-foreground text-sm">
                 {hoveredModel?.description}

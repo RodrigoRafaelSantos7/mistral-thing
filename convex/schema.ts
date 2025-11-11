@@ -1,14 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-export const models = v.union(
-  v.literal("mistral-medium-latest"),
-  v.literal("mistral-small-latest"),
-  v.literal("codestral-latest"),
-  v.literal("magistral-medium-latest"),
-  v.literal("magistral-small-latest")
-);
-
 export const themes = v.union(
   v.literal("default"),
   v.literal("t3-chat"),
@@ -17,21 +9,6 @@ export const themes = v.union(
   v.literal("graphite"),
   v.literal("amethyst-haze"),
   v.literal("vercel")
-);
-
-const capabilities = v.union(
-  v.literal("text-input"),
-  v.literal("text-output"),
-  v.literal("image-input"),
-  v.literal("image-output"),
-  v.literal("reasoning-output")
-);
-
-const icons = v.union(
-  v.literal("codestral"),
-  v.literal("magistral"),
-  v.literal("medium"),
-  v.literal("small")
 );
 
 export const modes = v.union(v.literal("light"), v.literal("dark"));
@@ -50,29 +27,21 @@ const schema = defineSchema({
     nickname: v.optional(v.string()),
     biography: v.optional(v.string()),
     instructions: v.optional(v.string()),
-    modelId: models,
-    pinnedModels: v.array(models),
+    modelId: v.string(),
+    pinnedModels: v.array(v.string()),
   }).index("by_userId", ["userId"]),
   model: defineTable({
-    name: v.string(),
-    model: models,
-    description: v.string(),
-    capabilities: v.array(capabilities),
-    icon: icons,
-    credits: v.number(),
-  }).index("by_model", ["model"]),
-  thread: defineTable({
-    userId: v.string(),
-    title: v.optional(v.string()),
-    status: threadStatus,
-    streamId: v.optional(v.string()),
-    updatedAt: v.number(),
-  }).index("by_userId_updatedAt", ["userId", "updatedAt"]),
-  message: defineTable({
-    threadId: v.id("thread"),
-    userId: v.string(),
-    message: v.any(),
-    updatedAt: v.number(),
-  }).index("by_threadId_updatedAt", ["threadId", "updatedAt"]),
+    modelId: v.string(),
+    name: v.union(v.string(), v.null()),
+    description: v.union(v.string(), v.null()),
+    capabilities: v.object({
+      completionChat: v.optional(v.boolean()),
+      completionFim: v.optional(v.boolean()),
+      functionCalling: v.optional(v.boolean()),
+      fineTuning: v.optional(v.boolean()),
+      vision: v.optional(v.boolean()),
+      classification: v.optional(v.boolean()),
+    }),
+  }).index("by_modelId", ["modelId"]),
 });
 export default schema;

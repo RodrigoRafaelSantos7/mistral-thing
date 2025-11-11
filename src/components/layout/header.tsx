@@ -4,20 +4,17 @@ import { ModelSelector } from "@/components/app/model-selector";
 import { ThemeSelector } from "@/components/app/theme-selector";
 import { UserMenu } from "@/components/app/user-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useThreadSelector } from "@/context/thread";
+
 import { useParamsThreadId } from "@/hooks/use-params-thread-id";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const threadId = useParamsThreadId();
-  const toolSidebar = useThreadSelector((state) => state.toolSidebar);
 
   return (
     <div
       className={cn(
         threadId && "border-b",
-        !toolSidebar &&
-          "2xl:border-none 2xl:bg-transparent 2xl:backdrop-blur-none",
         "absolute top-0 right-0 left-0 z-10 flex justify-between border-foreground/10 bg-background/50 backdrop-blur-md"
       )}
     >

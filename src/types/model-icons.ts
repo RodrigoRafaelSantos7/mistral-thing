@@ -1,1 +1,13 @@
-export type ModelIcon = "codestral" | "medium" | "magistral" | "small";
+export type ModelIcon =
+  | "codestral"
+  | "codestral-embed"
+  | "devstral"
+  | "embed"
+  | "large"
+  | "magistral"
+  | "medium"
+  | "ministral"
+  | "nemo"
+  | "pixtral"
+  | "small"
+  | "voxtral";

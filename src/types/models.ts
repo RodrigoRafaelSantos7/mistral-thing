@@ -1,6 +1,8 @@
-export type Model =
-  | "codestral-latest"
-  | "mistral-medium-latest"
-  | "mistral-small-latest"
-  | "magistral-medium-latest"
-  | "magistral-small-latest";
+import type { ModelCapabilities } from "@mistralai/mistralai/models/components";
+
+export type Model = {
+  id: string;
+  name?: string | null;
+  description?: string | null;
+  capabilities: ModelCapabilities;
+};
