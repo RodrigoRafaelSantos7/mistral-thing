@@ -10,8 +10,8 @@
 
 import type * as ai_prompt from "../ai/prompt.js";
 import type * as auth from "../auth.js";
-import type * as emails_magicLink from "../emails/magicLink.js";
 import type * as emails from "../emails.js";
+import type * as emails_magicLink from "../emails/magicLink.js";
 import type * as http from "../http.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
@@ -23,32 +23,40 @@ import type {
   FunctionReference,
 } from "convex/server";
 
+declare const fullApi: ApiFromModules<{
+  "ai/prompt": typeof ai_prompt;
+  auth: typeof auth;
+  emails: typeof emails;
+  "emails/magicLink": typeof emails_magicLink;
+  http: typeof http;
+  models: typeof models;
+  settings: typeof settings;
+  users: typeof users;
+}>;
+
 /**
- * A utility for referencing Convex functions in your app's API.
+ * A utility for referencing Convex functions in your app's public API.
  *
  * Usage:
  * ```js
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-declare const fullApi: ApiFromModules<{
-  "ai/prompt": typeof ai_prompt;
-  auth: typeof auth;
-  "emails/magicLink": typeof emails_magicLink;
-  emails: typeof emails;
-  http: typeof http;
-  models: typeof models;
-  settings: typeof settings;
-  users: typeof users;
-}>;
-declare const fullApiWithMounts: typeof fullApi;
-
 export declare const api: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "public">
 >;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
 export declare const internal: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "internal">
 >;
 
