@@ -121,6 +121,54 @@ export const getThreadById = query({
   },
 });
 
+export const getMessageById = query({
+  args: {
+    messageId: v.id("message"),
+  },
+  returns: messageValidator,
+  handler: async (ctx, args) => {
+    const user = await authComponent.getAuthUser(ctx);
+
+    if (!user) {
+      throw new ConvexError({
+        code: 401,
+        message: "User not found",
+        severity: "high",
+      });
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      throw new ConvexError({
+        code: 404,
+        message: "Message not found",
+        severity: "high",
+      });
+    }
+
+    const thread = await ctx.db.get(message.threadId);
+
+    if (!thread) {
+      throw new ConvexError({
+        code: 404,
+        message: "Thread not found",
+        severity: "high",
+      });
+    }
+
+    if (thread.userId !== (user._id as string)) {
+      throw new ConvexError({
+        code: 403,
+        message: "You are not allowed to access this message",
+        severity: "high",
+      });
+    }
+
+    return message;
+  },
+});
+
 export const updateTitle = mutation({
   args: {
     threadId: v.id("thread"),
