@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as ai_prompt from "../ai/prompt.js";
 import type * as auth from "../auth.js";
 import type * as emails_magicLink from "../emails/magicLink.js";
 import type * as emails from "../emails.js";
+import type * as exa from "../exa.js";
 import type * as http from "../http.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
@@ -32,9 +34,11 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "ai/prompt": typeof ai_prompt;
   auth: typeof auth;
   "emails/magicLink": typeof emails_magicLink;
   emails: typeof emails;
+  exa: typeof exa;
   http: typeof http;
   models: typeof models;
   settings: typeof settings;

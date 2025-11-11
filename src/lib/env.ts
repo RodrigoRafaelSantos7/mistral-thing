@@ -4,7 +4,9 @@ import { z } from "zod/v4";
 
 export const env = createEnv({
   client: { NEXT_PUBLIC_CONVEX_URL: z.string() },
-  server: {},
+  server: {
+    UPLOADTHING_TOKEN: z.string().min(1),
+  },
   shared: {
     NODE_ENV: z.enum(["development", "production"]).default("development"),
   },

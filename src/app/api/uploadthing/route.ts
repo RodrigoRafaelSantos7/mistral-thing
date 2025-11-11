@@ -11,7 +11,7 @@ import { logger } from "@/lib/logger";
 
 const f = createUploadthing();
 
-const router = {
+export const router = {
   fileUploader: f({
     image: {
       maxFileSize: "8MB",

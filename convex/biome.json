@@ -5,6 +5,9 @@
     "rules": {
       "style": {
         "useFilenamingConvention": "off"
+      },
+      "suspicious": {
+        "noConsole": "off"
       }
     }
   }
