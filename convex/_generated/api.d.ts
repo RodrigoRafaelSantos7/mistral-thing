@@ -8,7 +8,7 @@
  * @module
  */
 
-import type * as ai_agents from "../ai/agents.js";
+import type * as ai_chat from "../ai/chat.js";
 import type * as ai_prompt from "../ai/prompt.js";
 import type * as auth from "../auth.js";
 import type * as emails from "../emails.js";
@@ -25,7 +25,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "ai/agents": typeof ai_agents;
+  "ai/chat": typeof ai_chat;
   "ai/prompt": typeof ai_prompt;
   auth: typeof auth;
   emails: typeof emails;

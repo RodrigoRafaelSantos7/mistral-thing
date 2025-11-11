@@ -43,5 +43,21 @@ const schema = defineSchema({
       classification: v.optional(v.boolean()),
     }),
   }).index("by_modelId", ["modelId"]),
+  message: defineTable({
+    threadId: v.id("thread"),
+    role: v.union(
+      v.literal("user"),
+      v.literal("assistant"),
+      v.literal("tool"),
+      v.literal("system")
+    ),
+    content: v.string(),
+    updatedAt: v.number(),
+  }).index("by_threadId_updatedAt", ["threadId", "updatedAt"]),
+  thread: defineTable({
+    userId: v.string(),
+    messages: v.array(v.id("message")),
+    updatedAt: v.number(),
+  }).index("by_userId_updatedAt", ["userId", "updatedAt"]),
 });
 export default schema;
