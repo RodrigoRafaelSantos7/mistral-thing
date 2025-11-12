@@ -1,8 +1,7 @@
 import { ModelSelector } from "@/components/app/model-selector";
 import { ThemeSelector } from "@/components/app/theme-selector";
-
+import { UserMenu } from "@/components/app/user-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-
 import { cn } from "@/lib/utils";
 
 // @todo: add threadId to the header
@@ -19,6 +18,7 @@ export function Header() {
       </div>
       <div className="flex items-center gap-2 p-3">
         <ThemeSelector />
+        <UserMenu />
       </div>
     </div>
   );

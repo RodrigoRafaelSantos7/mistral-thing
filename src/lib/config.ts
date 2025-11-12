@@ -54,3 +54,6 @@ export const THEME_OPTIONS = [
   "vercel-light",
   "vercel-dark",
 ];
+
+export const GITHUB_URL =
+  "https://github.com/RodrigoRafaelSantos7/MistralThing";
