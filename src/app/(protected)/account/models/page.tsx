@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import ModelIcon from "@/components/app/model-icon";
+import { CapabilityBadges } from "@/components/ui/capability-badge";
 import { Section } from "@/components/ui/section";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -91,7 +92,9 @@ const Page = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 bg-sidebar p-4" />
+                <div className="flex items-center justify-between gap-3 bg-sidebar p-4">
+                  <CapabilityBadges capabilities={model.capabilities} />
+                </div>
               </div>
             ))
           )}
