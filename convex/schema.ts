@@ -45,4 +45,16 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_userId_updatedAt", ["userId", "updatedAt"]),
+  message: defineTable({
+    chatId: v.id("chat"),
+    content: v.optional(v.string()),
+    role: v.union(
+      v.literal("system"),
+      v.literal("user"),
+      v.literal("assistant"),
+      v.literal("tool")
+    ),
+    userId: v.optional(v.string()),
+    modelId: v.string(),
+  }).index("by_chatId", ["chatId"]),
 });
