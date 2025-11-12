@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useUserSettings } from "@/lib/user-settings-store/provider";
-import { loginPath } from "@/paths";
+import { accountAppearancePath, loginPath } from "@/paths";
 
 const Page = () => {
   const { settings } = useUserSettings();
@@ -26,6 +26,9 @@ const Page = () => {
         }
       >
         Logout
+      </Button>
+      <Button onClick={() => router.push(accountAppearancePath())}>
+        Appearance
       </Button>
     </div>
   );
