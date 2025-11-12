@@ -3,6 +3,7 @@
 import type { ImageProps } from "next/image";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type DynamicImageProps = Omit<ImageProps, "src" | "className"> & {
@@ -19,17 +20,16 @@ const DynamicImage = ({
   ...props
 }: DynamicImageProps) => {
   const { theme } = useTheme();
-  const isDarkMode = theme?.includes("dark");
+  const [mounted, setMounted] = useState(false);
 
-  if (isDarkMode) {
-    return (
-      <Image alt={alt} className={cn(className)} src={darkSrc} {...props} />
-    );
-  }
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
-    <Image alt={alt} className={cn(className)} src={lightSrc} {...props} />
-  );
+  const isDarkMode = mounted && theme?.includes("dark");
+  const src = isDarkMode ? darkSrc : lightSrc;
+
+  return <Image alt={alt} className={cn(className)} src={src} {...props} />;
 };
 
 export { DynamicImage };
