@@ -103,7 +103,7 @@ export function ModelSelector() {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className={cn("relative min-w-[400px] p-0")}
+        className={cn("relative min-w-[200px] p-0 sm:min-w-[400px]")}
       >
         <Command>
           <CommandInput className="h-9" placeholder="Find Model..." />
@@ -125,7 +125,10 @@ export function ModelSelector() {
                       />
                       <span className="truncate">{model.name}</span>
                     </span>
-                    <CapabilityBadges capabilities={model.capabilities} />
+                    <CapabilityBadges
+                      capabilities={model.capabilities}
+                      className="hidden sm:block"
+                    />
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -148,7 +151,10 @@ export function ModelSelector() {
                         />
                         <span className="truncate">{model.name}</span>
                       </span>
-                      <CapabilityBadges capabilities={model.capabilities} />
+                      <CapabilityBadges
+                        capabilities={model.capabilities}
+                        className="hidden sm:block"
+                      />
                       <div className="flex items-center gap-2">
                         <Button
                           aria-label="Unpin model"
@@ -182,7 +188,10 @@ export function ModelSelector() {
                         />
                         <span className="truncate">{model.name}</span>
                       </span>
-                      <CapabilityBadges capabilities={model.capabilities} />
+                      <CapabilityBadges
+                        capabilities={model.capabilities}
+                        className="hidden sm:block"
+                      />
                       <div className="flex items-center gap-2">
                         <Button
                           aria-label="Pin model"
