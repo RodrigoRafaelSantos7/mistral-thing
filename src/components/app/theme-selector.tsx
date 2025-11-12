@@ -34,7 +34,7 @@ const ThemeSelector = () => {
 
   useEffect(() => {
     setTheme(`${settings.theme}-${settings.mode}`);
-  }, [settings, setTheme]);
+  }, [settings.theme, settings.mode, setTheme]);
 
   const mode = settings.mode ?? "dark";
   const currentTheme = settings.theme ?? "default";
