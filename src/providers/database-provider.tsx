@@ -2,6 +2,7 @@ import { preloadQuery } from "convex/nextjs";
 import type { ReactNode } from "react";
 import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth-server";
+import { ChatSessionProvider } from "@/lib/chat-store/session/provider";
 import { ModelsProvider } from "@/lib/model-store/provider";
 import { UserSettingsProvider } from "@/lib/user-settings-store/provider";
 import { UserProvider } from "@/lib/user-store/provider";
@@ -18,7 +19,9 @@ const DatabaseProvider = async ({ children }: { children: ReactNode }) => {
   return (
     <UserSettingsProvider initialSettings={initialSettings}>
       <ModelsProvider initialModels={initialModels}>
-        <UserProvider initialUser={initialUser}>{children}</UserProvider>
+        <UserProvider initialUser={initialUser}>
+          <ChatSessionProvider>{children}</ChatSessionProvider>
+        </UserProvider>
       </ModelsProvider>
     </UserSettingsProvider>
   );

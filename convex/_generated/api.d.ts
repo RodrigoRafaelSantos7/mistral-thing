@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as email_email from "../email/email.js";
 import type * as email_template from "../email/template.js";
 import type * as http from "../http.js";
+import type * as messages from "../messages.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
 import type * as users from "../users.js";
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   "email/email": typeof email_email;
   "email/template": typeof email_template;
   http: typeof http;
+  messages: typeof messages;
   models: typeof models;
   settings: typeof settings;
   users: typeof users;

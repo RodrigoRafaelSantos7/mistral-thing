@@ -37,4 +37,28 @@ export default defineSchema({
       classification: v.optional(v.boolean()),
     }),
   }).index("by_modelId", ["modelId"]),
+  messages: defineTable({
+    chatId: v.string(),
+    content: v.optional(v.string()),
+    role: v.union(
+      v.literal("system"),
+      v.literal("user"),
+      v.literal("assistant"),
+      v.literal("data")
+    ),
+    parts: v.optional(v.any()),
+    userId: v.optional(v.string()),
+    messageGroupId: v.optional(v.string()),
+    model: v.optional(v.string()),
+  })
+    .index("by_chatId", ["chatId"])
+    .index("by_userId", ["userId"])
+    .index("by_messageGroupId", ["messageGroupId"]),
+  chat: defineTable({
+    userId: v.string(),
+    title: v.optional(v.string()),
+    model: v.optional(v.string()),
+    name: v.string(),
+    updatedAt: v.number(),
+  }).index("by_userId", ["userId"]),
 });
