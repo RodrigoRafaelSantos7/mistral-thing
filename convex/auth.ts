@@ -93,6 +93,11 @@ export const createAuth = (
     ],
   });
 
+/**
+ * Retrieves the current authenticated user.
+ *
+ * @returns The current user or null if not authenticated
+ */
 export const getCurrentUser = query({
   handler: async (ctx) => authComponent.getAuthUser(ctx),
 });
