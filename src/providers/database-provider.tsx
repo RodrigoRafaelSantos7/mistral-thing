@@ -2,6 +2,7 @@ import { fetchQuery } from "convex/nextjs";
 import type { ReactNode } from "react";
 import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth-server";
+import { ModelsProvider } from "@/lib/model-store/provider";
 import { UserSettingsProvider } from "@/lib/user-settings-store/provider";
 
 const DatabaseProvider = async ({ children }: { children: ReactNode }) => {
@@ -10,7 +11,7 @@ const DatabaseProvider = async ({ children }: { children: ReactNode }) => {
 
   return (
     <UserSettingsProvider initialSettings={initialSettings}>
-      {children}
+      <ModelsProvider>{children}</ModelsProvider>
     </UserSettingsProvider>
   );
 };
