@@ -1,11 +1,11 @@
-import { Chat } from "@/components/chat/chat";
 import { LayoutApp } from "@/components/layout/layout-app";
+import { MessageList } from "@/components/thread/message/message-list";
 import { MessagesProvider } from "@/lib/threads-store/messages/provider";
 
 const Page = () => (
   <MessagesProvider>
     <LayoutApp>
-      <Chat />
+      <MessageList />
     </LayoutApp>
   </MessagesProvider>
 );

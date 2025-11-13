@@ -40,6 +40,11 @@ export default defineSchema({
   thread: defineTable({
     userId: v.string(),
     title: v.optional(v.string()),
+    status: v.union(
+      v.literal("ready"),
+      v.literal("streaming"),
+      v.literal("submitted")
+    ),
     updatedAt: v.number(),
   }).index("by_userId", ["userId"]),
   messages: defineTable({

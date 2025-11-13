@@ -9,7 +9,11 @@ import type { Thread } from "@/lib/threads-store/threads/utils";
 type ThreadsContextType = {
   threads: Thread[];
   createThread: () => Promise<Id<"thread">>;
-  updateThread: (args: { id: Id<"thread">; title?: string }) => void;
+  updateThread: (args: {
+    id: Id<"thread">;
+    title?: string;
+    status?: "ready" | "streaming" | "submitted";
+  }) => void;
   removeThread: (args: { id: Id<"thread"> }) => void;
   getThreadById: (id: Id<"thread">) => Thread | undefined;
 };
@@ -38,6 +42,7 @@ export function ThreadsProvider({
           _id: `temp-${now}` as Id<"thread">,
           _creationTime: now,
           userId: "",
+          status: "ready",
           updatedAt: now,
         };
         const updatedThreads = [tempThread, ...currentThreads];

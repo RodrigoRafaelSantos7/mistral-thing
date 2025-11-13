@@ -46,6 +46,7 @@ export const create = mutation({
 
     return await ctx.db.insert("thread", {
       userId: user._id,
+      status: "ready",
       updatedAt: Date.now(),
     });
   },
@@ -61,6 +62,13 @@ export const update = mutation({
   args: {
     id: v.id("thread"),
     title: v.optional(v.string()),
+    status: v.optional(
+      v.union(
+        v.literal("ready"),
+        v.literal("streaming"),
+        v.literal("submitted")
+      )
+    ),
   },
   handler: async (ctx, args) => {
     const user = await authComponent.getAuthUser(ctx).catch(() => null);
@@ -93,6 +101,7 @@ export const update = mutation({
 
     return await ctx.db.patch(args.id, {
       title: args.title,
+      status: args.status,
       updatedAt: Date.now(),
     });
   },
