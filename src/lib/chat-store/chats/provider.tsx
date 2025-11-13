@@ -14,6 +14,7 @@ type ChatsContextType = {
     title?: string;
     model?: string;
     updatedAt?: number;
+    streamId?: string;
   }) => void;
   removeChat: (args: { id: Id<"chat"> }) => void;
   getChatById: (id: Id<"chat">) => Chat | undefined;
@@ -41,6 +42,7 @@ export function ChatsProvider({
           _creationTime: now,
           title: args.title,
           model: args.model,
+          streamId: "",
           userId: "",
           updatedAt: now,
         };

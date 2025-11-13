@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/complexity/noUselessFragments: <explanation> */
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
@@ -22,7 +21,7 @@ export function Chat() {
         {showOnboarding ? (
           <motion.div
             animate={{ opacity: 1 }}
-            className="absolute bottom-[60%] mx-auto max-w-[50rem] md:relative md:bottom-auto"
+            className="absolute bottom-[60%] mx-auto max-w-200 md:relative md:bottom-auto"
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             key="onboarding"
@@ -38,9 +37,7 @@ export function Chat() {
               What&apos;s on your mind?
             </h1>
           </motion.div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </AnimatePresence>
 
       <motion.div
@@ -55,7 +52,7 @@ export function Chat() {
           },
         }}
       >
-        <></>
+        test
       </motion.div>
     </div>
   );
