@@ -2,8 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useMemo } from "react";
+import type { Id } from "@/convex/_generated/dataModel";
 
-const ChatSessionContext = createContext<{ chatId: string | null }>({
+const ChatSessionContext = createContext<{ chatId: Id<"chat"> | null }>({
   chatId: null,
 });
 
@@ -22,7 +23,7 @@ export function ChatSessionProvider({
 
   const chatId = useMemo(() => {
     if (pathname?.startsWith("/c/")) {
-      return pathname.split("/c/")[1];
+      return pathname.split("/c/")[1] as Id<"chat">;
     }
     return null;
   }, [pathname]);

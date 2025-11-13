@@ -1,4 +1,10 @@
-"use client";
+/** biome-ignore-all lint/complexity/noUselessLoneBlockStatements: <explanation> */
+import { Chat } from "@/components/chat/chat";
+import { LayoutApp } from "@/components/layout/layout-app";
+import { MessagesProvider } from "@/lib/chat-store/messages/provider";
+
+{
+  /** "use client";
 
 import { useMutation, useQuery } from "convex/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -133,5 +139,17 @@ export default function ChatWindow() {
         </div>
       </div>
     </LayoutApp>
+  );
+}
+*/
+}
+
+export default function Page() {
+  return (
+    <MessagesProvider>
+      <LayoutApp>
+        <Chat />
+      </LayoutApp>
+    </MessagesProvider>
   );
 }

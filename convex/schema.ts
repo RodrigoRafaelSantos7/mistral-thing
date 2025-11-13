@@ -43,10 +43,14 @@ export default defineSchema({
     model: v.string(),
     title: v.string(),
     userId: v.string(),
+    streamId: StreamIdValidator,
   })
     .index("by_userId", ["userId"])
     .index("by_userId_updatedAt", ["userId", "updatedAt"]),
   message: defineTable({
+    chatId: v.id("chat"),
+    modelId: v.string(),
+    userId: v.optional(v.string()),
     content: v.optional(v.string()),
     role: v.union(
       v.literal("system"),
@@ -54,8 +58,5 @@ export default defineSchema({
       v.literal("assistant"),
       v.literal("tool")
     ),
-    userId: v.optional(v.string()),
-    responseStreamId: StreamIdValidator,
-    modelId: v.string(),
-  }).index("by_stream", ["responseStreamId"]),
+  }).index("by_chatId", ["chatId"]),
 });

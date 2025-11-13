@@ -15,9 +15,10 @@ const MessagesContext = createContext<MessagesContextType | null>(null);
 
 export function MessagesProvider({ children }: { children: React.ReactNode }) {
   const { chatId } = useChatSession();
-  const messages = useQuery(api.messages.getChatMessages, {
-    chatId: chatId as Id<"chat">,
-  });
+  const messages = useQuery(
+    api.messages.listByChatId,
+    chatId ? { chatId: chatId as Id<"chat"> } : "skip"
+  );
 
   return (
     <MessagesContext.Provider value={{ messages: messages ?? [] }}>
