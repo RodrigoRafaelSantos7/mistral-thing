@@ -1,52 +1,71 @@
-import { ConvexError, v } from "convex/values";
-import { query } from "@/convex/_generated/server";
-import { authComponent } from "./auth";
+import type { StreamId } from "@convex-dev/persistent-text-streaming";
+import { v } from "convex/values";
+import { internalQuery, mutation, query } from "@/convex/_generated/server";
+import { streamingComponent } from "./streaming";
 
-export const getChatMessages = query({
-  args: { chatId: v.id("chat") },
+export const listMessages = query({
+  args: {},
+  handler: async (ctx) => await ctx.db.query("message").collect(),
+});
+
+export const clearMessages = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const chats = await ctx.db.query("message").collect();
+    await Promise.all(chats.map((chat) => ctx.db.delete(chat._id)));
+  },
+});
+
+export const sendMessage = mutation({
+  args: {
+    prompt: v.string(),
+  },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx).catch(() => null);
+    const responseStreamId = await streamingComponent.createStream(ctx);
+    const chatId = await ctx.db.insert("message", {
+      content: args.prompt,
+      responseStreamId,
+      role: "user",
+      modelId: "mistral-small-latest",
+    });
+    return chatId;
+  },
+});
 
-    if (!user) {
-      throw new ConvexError({
-        code: 401,
-        message: "User not found. Please login to continue.",
-        severity: "high",
-      });
-    }
+export const getHistory = internalQuery({
+  handler: async (ctx) => {
+    // Grab all the user messages
+    const allMessages = await ctx.db.query("message").collect();
 
-    const chat = await ctx.db.get(args.chatId);
+    // Lets join the user messages with the assistant messages
+    const joinedResponses = await Promise.all(
+      allMessages.map(async (userMessage) => ({
+        userMessage,
+        responseMessage: await streamingComponent.getStreamBody(
+          ctx,
+          userMessage.responseStreamId as StreamId
+        ),
+      }))
+    );
 
-    if (!chat) {
-      throw new ConvexError({
-        code: 404,
-        message: "Chat not found.",
-        severity: "high",
-      });
-    }
+    return joinedResponses.flatMap((joined) => {
+      const user = {
+        role: "user" as const,
+        content: joined.userMessage.content,
+      };
 
-    if (chat.userId !== user._id) {
-      throw new ConvexError({
-        code: 403,
-        message: "You are not allowed to access this chat.",
-        severity: "high",
-      });
-    }
+      const assistant = {
+        role: "assistant" as const,
+        content: joined.responseMessage.text,
+      };
 
-    const messages = await ctx.db
-      .query("message")
-      .withIndex("by_chatId", (q) => q.eq("chatId", args.chatId))
-      .order("desc")
-      .collect();
+      // If the assistant message is empty, its probably because we have not
+      // started streaming yet so lets not include it in the history
+      if (!assistant.content) {
+        return [user];
+      }
 
-    return messages.map((message) => ({
-      id: message._id,
-      content: message.content,
-      role: message.role,
-      chatId: message.chatId,
-      userId: message.userId,
-      modelId: message.modelId,
-      createdAt: message._creationTime,
-    }));
+      return [user, assistant];
+    });
   },
 });

@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as chat from "../chat.js";
 import type * as chats from "../chats.js";
 import type * as email_email from "../email/email.js";
 import type * as email_template from "../email/template.js";
@@ -16,6 +17,7 @@ import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
+import type * as streaming from "../streaming.js";
 import type * as users from "../users.js";
 
 import type {
@@ -26,6 +28,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  chat: typeof chat;
   chats: typeof chats;
   "email/email": typeof email_email;
   "email/template": typeof email_template;
@@ -33,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   models: typeof models;
   settings: typeof settings;
+  streaming: typeof streaming;
   users: typeof users;
 }>;
 
@@ -2288,6 +2292,41 @@ export declare const components: {
             | "failed";
         },
         null
+      >;
+    };
+  };
+  persistentTextStreaming: {
+    lib: {
+      addChunk: FunctionReference<
+        "mutation",
+        "internal",
+        { final: boolean; streamId: string; text: string },
+        any
+      >;
+      createStream: FunctionReference<"mutation", "internal", {}, any>;
+      getStreamStatus: FunctionReference<
+        "query",
+        "internal",
+        { streamId: string },
+        "pending" | "streaming" | "done" | "error" | "timeout"
+      >;
+      getStreamText: FunctionReference<
+        "query",
+        "internal",
+        { streamId: string },
+        {
+          status: "pending" | "streaming" | "done" | "error" | "timeout";
+          text: string;
+        }
+      >;
+      setStreamStatus: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          status: "pending" | "streaming" | "done" | "error" | "timeout";
+          streamId: string;
+        },
+        any
       >;
     };
   };
