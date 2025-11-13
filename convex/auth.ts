@@ -66,6 +66,15 @@ export const createAuth = (
     logger: {
       disabled: optionsOnly,
     },
+    trustedOrigins: [
+      "https://mistral-thing.xyz",
+      "https://www.mistral-thing.xyz",
+      "http://localhost:3000",
+    ],
+    session: {
+      expiresIn: 60 * 60 * 24 * 365,
+      updateAge: 60 * 60 * 24,
+    },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
     socialProviders: {
