@@ -167,18 +167,10 @@ export const streamChat = httpAction(async (ctx, request) => {
     _request: any,
     streamId: StreamId,
     chunkAppender: any
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
   ) => {
     try {
       console.log("Generate chat called with streamId:", streamId);
-
-      await ctx.runMutation(internal.chat.setThreadStatus, {
-        threadId: body.threadId,
-        status: "submitted",
-      });
-
-      const userSettings = await ctx.runQuery(internal.chat.getUserSettings, {
-        userId: body.userId,
-      });
 
       // Get the message that we're streaming to
       const message = await ctx.runQuery(internal.chat.getMessageByStreamId, {
@@ -190,6 +182,29 @@ export const streamChat = httpAction(async (ctx, request) => {
         await chunkAppender("Error: Message not found");
         return;
       }
+
+      await ctx.runMutation(internal.chat.setThreadStatus, {
+        threadId: message.threadId,
+        status: "submitted",
+      });
+
+      // Get the thread to extract userId
+      const thread = await ctx.runQuery(internal.chat.getThreadByIdInternal, {
+        threadId: message.threadId,
+      });
+
+      if (!thread) {
+        console.error("No thread found for threadId:", message.threadId);
+        await chunkAppender("Error: Thread not found");
+        return;
+      }
+
+      // Use body.userId if present, otherwise fall back to thread's userId
+      const userId = body.userId || thread.userId;
+
+      const userSettings = await ctx.runQuery(internal.chat.getUserSettings, {
+        userId,
+      });
 
       // Get conversation history from the conversation
       const allMessages = await ctx.runQuery(
@@ -211,7 +226,7 @@ export const streamChat = httpAction(async (ctx, request) => {
       }
 
       await ctx.runMutation(internal.chat.setThreadStatus, {
-        threadId: body.threadId,
+        threadId: message.threadId,
         status: "streaming",
       });
 
@@ -227,18 +242,24 @@ export const streamChat = httpAction(async (ctx, request) => {
         ],
       });
 
+      // Collect all streamed content
+      let finalContent = "";
       for await (const chunk of response) {
-        await chunkAppender(chunk.data.choices[0].delta.content);
+        const content = chunk.data.choices[0].delta.content;
+        if (content) {
+          finalContent += content;
+          await chunkAppender(content);
+        }
       }
 
-      // Mark the message as complete
+      // Mark the message as complete with the accumulated content
       await ctx.runMutation(internal.chat.markStreamComplete, {
         messageId: message._id,
-        finalContent: response,
+        finalContent,
       });
 
       await ctx.runMutation(internal.chat.setThreadStatus, {
-        threadId: body.threadId,
+        threadId: message.threadId,
         status: "ready",
       });
 
@@ -251,17 +272,20 @@ export const streamChat = httpAction(async (ctx, request) => {
 
       // Try to mark the message as complete even on error
       try {
-        const message = await ctx.runQuery(internal.chat.getMessageByStreamId, {
-          streamId,
-        });
-        if (message) {
+        const errorMessageDoc = await ctx.runQuery(
+          internal.chat.getMessageByStreamId,
+          {
+            streamId,
+          }
+        );
+        if (errorMessageDoc) {
           await ctx.runMutation(internal.chat.markStreamComplete, {
-            messageId: message._id,
+            messageId: errorMessageDoc._id,
             finalContent: errorMessage,
           });
 
           await ctx.runMutation(internal.chat.setThreadStatus, {
-            threadId: body.threadId,
+            threadId: errorMessageDoc.threadId,
             status: "ready",
           });
         }
@@ -308,6 +332,17 @@ export const getMessageByStreamId = internalQuery({
  * @returns The conversation
  */
 export const getThreadById = query({
+  args: { threadId: v.id("thread") },
+  handler: async (ctx, args) => await ctx.db.get(args.threadId),
+});
+
+/**
+ * Retrieves a thread by its id (internal version for HTTP actions).
+ *
+ * @param threadId - The id of the thread
+ * @returns The thread
+ */
+export const getThreadByIdInternal = internalQuery({
   args: { threadId: v.id("thread") },
   handler: async (ctx, args) => await ctx.db.get(args.threadId),
 });
