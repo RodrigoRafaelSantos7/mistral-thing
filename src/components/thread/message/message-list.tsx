@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { StickToBottom, useStickToBottom } from "use-stick-to-bottom";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
-
+import { ChatInput } from "@/components/thread/chat-input";
 import { useMessages } from "@/lib/threads-store/messages/provider";
 import { useThreadSession } from "@/lib/threads-store/session/provider";
 import { useThreads } from "@/lib/threads-store/threads/provider";
@@ -49,8 +49,11 @@ export function MessageList() {
         scrollRef={instance.scrollRef}
         ssrCount={messages.length}
       >
-        {messages.map((message) => message.content)}
+        <div className="mt-30 flex flex-col gap-2">
+          {messages.map((message) => message.content)}
+        </div>
       </Virtualizer>
+      <ChatInput />
     </StickToBottom>
   );
 }

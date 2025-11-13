@@ -22,8 +22,8 @@ export function ThreadSessionProvider({
   const pathname = usePathname();
 
   const threadId = useMemo(() => {
-    if (pathname?.startsWith("/c/")) {
-      return pathname.split("/c/")[1] as Id<"thread">;
+    if (pathname?.startsWith("/t/")) {
+      return pathname.split("/t/")[1] as Id<"thread">;
     }
     return null;
   }, [pathname]);

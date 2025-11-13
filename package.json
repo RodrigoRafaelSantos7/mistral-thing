@@ -48,6 +48,7 @@
     "react-email": "^5.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "ts-pattern": "^5.9.0",
     "ua-parser-js": "^2.0.6",
     "virtua": "^0.46.7",
     "zod": "^4.1.12"
