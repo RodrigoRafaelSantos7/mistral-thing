@@ -42,7 +42,7 @@ export function ThreadsProvider({
           _id: `temp-${now}` as Id<"thread">,
           _creationTime: now,
           userId: "",
-          status: "ready",
+          status: "streaming",
           updatedAt: now,
         };
         const updatedThreads = [tempThread, ...currentThreads];

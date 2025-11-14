@@ -34,7 +34,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useThreadsByTimeRange } from "@/hooks/use-chats-by-time-range";
 import { useThreadSession } from "@/lib/threads-store/session/provider";
 import { useThreads } from "@/lib/threads-store/threads/provider";
@@ -480,14 +479,17 @@ function DeleteChatDialog({
   setThreadToDelete: (thread: Thread | null) => void;
 }) {
   const { removeThread } = useThreads();
+  const { threadId } = useThreadSession();
   const router = useRouter();
 
   function handleDelete() {
     if (!thread) {
       return;
     }
-    removeThread({ id: thread._id as Id<"thread"> });
-    router.push(indexPath());
+    removeThread({ id: thread._id });
+    if (threadId === thread._id) {
+      router.push(indexPath());
+    }
     setThreadToDelete(null);
   }
 

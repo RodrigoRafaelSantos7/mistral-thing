@@ -80,7 +80,7 @@ const Page = () => {
         />
         <SingleFieldForm
           defaultValue={settings?.biography ?? ""}
-          description="What should Zeron Chat know about you?"
+          description="What should Mistral Thing Chat know about you?"
           footerMessage="Please use 500 characters or less."
           label="Biography"
           onSubmit={async (value) => {

@@ -46,7 +46,7 @@ export const create = mutation({
 
     return await ctx.db.insert("thread", {
       userId: user._id,
-      status: "ready",
+      status: "streaming",
       updatedAt: Date.now(),
     });
   },
