@@ -14,15 +14,19 @@ import { useMessages } from "@/lib/threads-store/messages/provider";
 
 export const UserMessage = memo(function PureUserMessage({
   id,
+  hasNextMessage: propHasNextMessage,
+  hasPreviousMessage: propHasPreviousMessage,
 }: {
   id: string;
+  hasNextMessage?: boolean;
+  hasPreviousMessage?: boolean;
 }) {
   const [_, copy] = useCopyToClipboard();
   const { messages } = useMessages();
   const index = messages.findIndex((messageItem) => messageItem._id === id);
   const message = messages[index];
-  const hasNextMessage = messages.length > index + 1;
-  const hasPreviousMessage = index > 0;
+  const hasNextMessage = propHasNextMessage ?? messages.length > index + 1;
+  const hasPreviousMessage = propHasPreviousMessage ?? index > 0;
 
   async function handleCopyClick() {
     const text = message?.content;
@@ -38,7 +42,7 @@ export const UserMessage = memo(function PureUserMessage({
   return (
     <>
       <MessageContainer
-        hasNextMessage={true}
+        hasNextMessage={hasNextMessage}
         hasPreviousMessage={hasPreviousMessage}
       >
         <Message className="group/user-message flex w-full flex-col items-end">
