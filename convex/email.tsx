@@ -10,12 +10,11 @@ import {
   Img,
   Link,
   Preview,
-  pretty,
-  render,
   Section,
   Tailwind,
   Text,
 } from "@react-email/components";
+import { pretty, render } from "@react-email/render";
 import { components } from "./_generated/api";
 import type { ActionCtx } from "./_generated/server";
 

@@ -33,17 +33,11 @@ const LoginPage = () => {
           callbackURL: indexPath(),
         })
         .then(async (result) => {
-          const toastId = toast.loading("Sending magic link...");
           if (result?.error != null) {
-            toast.error(result.error.message, { id: toastId });
+            toast.error(result.error.message);
           } else {
-            toast.dismiss(toastId);
             router.push(magicLinkPath());
           }
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error("Failed to send the magic link. Please try again!");
         });
     },
     validators: {
@@ -133,6 +127,12 @@ const LoginPage = () => {
                       toast.dismiss(toastId);
                       router.push(indexPath());
                     }
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                    toast.error(
+                      "Failed to sign in with Google. Please try again!"
+                    );
                   });
               })
             }
@@ -158,6 +158,12 @@ const LoginPage = () => {
                       toast.dismiss(toastId);
                       router.push(indexPath());
                     }
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                    toast.error(
+                      "Failed to sign in with GitHub. Please try again!"
+                    );
                   });
               })
             }
