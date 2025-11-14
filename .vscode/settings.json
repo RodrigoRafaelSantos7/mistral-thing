@@ -30,6 +30,18 @@
   "emmet.showExpandedAbbreviation": "never",
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
-  }
+    "source.organizeImports.biome": "explicit",
+    "source.action.organizeImports": "explicit"
+  },
+  "files.associations": {
+    "**/*.css": "tailwindcss"
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  "tailwindCSS.classFunctions": ["cva", "cn", "cx"],
+  "typescript.experimental.useTsgo": true,
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.autoImportFileExcludePatterns": ["radix-ui/**"],
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"]
 }

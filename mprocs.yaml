@@ -1,5 +1,0 @@
-procs:
-  convex:
-    cmd: ["bun", "x", "convex", "dev"]
-  next:
-    cmd: ["bun", "run", "next", "dev"]

@@ -1,4 +1,19 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/core", "ultracite/next"]
+  "extends": ["ultracite/core", "ultracite/next"],
+  "files": {
+    "includes": ["**", "!convex/_generated"],
+    "ignoreUnknown": false
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noChildrenProp": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noShadowRestrictedNames": "off"
+      }
+    }
+  }
 }

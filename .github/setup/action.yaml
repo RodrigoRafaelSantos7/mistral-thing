@@ -1,0 +1,19 @@
+name: Setup Workflow
+description: Composite action that sets up Bun and installs dependencies
+
+runs:
+  using: "composite"
+  steps:
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: "package.json"
+
+    - shell: bash
+      run: bun install --ignore-scripts
+
+    - shell: bash
+      run: cp .env.example .env
