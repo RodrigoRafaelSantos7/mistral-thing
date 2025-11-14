@@ -3,26 +3,32 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth-server";
-import { AuthLayout } from "@/modules/auth/ui/layouts/auth-layout";
 import { indexPath } from "@/paths";
 
 export const metadata: Metadata = {
+  title: {
+    default: "Welcome Back",
+    template: "%s | Mistral Thing",
+  },
   description:
     "Get access to AI models from Mistral. Nearly unlimited tier is free!",
 };
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await (async () => {
-    "use server";
-    const token = await getToken();
-    return await fetchQuery(api.users.getSession, {}, { token });
-  })();
+  const token = await getToken();
 
-  if (session) {
-    return redirect(indexPath());
+  if (token) {
+    const session = await fetchQuery(api.auth.getSession, {}, { token });
+    if (session) {
+      return redirect(indexPath());
+    }
   }
 
-  return <AuthLayout>{children}</AuthLayout>;
+  return (
+    <div className="flex h-full min-h-screen min-w-screen flex-col items-center justify-center">
+      {children}
+    </div>
+  );
 };
 
 export default Layout;

@@ -25,16 +25,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
-const NUMBER_OF_DAYS = 24;
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * NUMBER_OF_DAYS;
+const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
-const SKELETON_WIDTH_MIN_PERCENT = 50;
-const SKELETON_WIDTH_MAX_PERCENT = 90;
-const SKELETON_WIDTH_RANGE =
-  SKELETON_WIDTH_MAX_PERCENT - SKELETON_WIDTH_MIN_PERCENT;
+
+function setSidebarCookie(value: boolean): void {
+  const cookieValue = `${SIDEBAR_COOKIE_NAME}=${value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+  // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not widely supported, direct assignment needed for sidebar state persistence
+  document.cookie = cookieValue;
+}
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed";
@@ -55,15 +56,6 @@ function useSidebar() {
   }
 
   return context;
-}
-
-function setCookie(name: string, value: string, maxAge: number): void {
-  if (typeof document === "undefined") {
-    return;
-  }
-  const cookieString = `${name}=${value}; path=/; max-age=${maxAge}`;
-  // biome-ignore lint: Cookie setting is intentional for sidebar state persistence
-  document.cookie = cookieString;
 }
 
 function SidebarProvider({
@@ -87,7 +79,7 @@ function SidebarProvider({
   const [_open, _setOpen] = React.useState(defaultOpen);
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
-    (newValue: boolean | ((prevValue: boolean) => boolean)) => {
+    (newValue: boolean | ((prev: boolean) => boolean)) => {
       const openState =
         typeof newValue === "function" ? newValue(open) : newValue;
       if (setOpenProp) {
@@ -97,7 +89,7 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      setCookie(SIDEBAR_COOKIE_NAME, String(openState), SIDEBAR_COOKIE_MAX_AGE);
+      setSidebarCookie(openState);
     },
     [setOpenProp, open]
   );
@@ -105,9 +97,7 @@ function SidebarProvider({
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(
     () =>
-      isMobile
-        ? setOpenMobile((prevOpen) => !prevOpen)
-        : setOpen((prevOpen) => !prevOpen),
+      isMobile ? setOpenMobile((prev) => !prev) : setOpen((prev) => !prev),
     [isMobile, setOpen]
   );
 
@@ -626,8 +616,7 @@ function SidebarMenuSkeleton({
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(
-    () =>
-      `${Math.floor(Math.random() * SKELETON_WIDTH_RANGE) + SKELETON_WIDTH_MIN_PERCENT}%`,
+    () => `${Math.floor(Math.random() * 40) + 50}%`,
     []
   );
 

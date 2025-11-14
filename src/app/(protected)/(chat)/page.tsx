@@ -1,11 +1,13 @@
-"use client";
+import { LayoutApp } from "@/components/layout/layout-app";
+import { MessageList } from "@/components/thread/message/message-list";
+import { MessagesProvider } from "@/lib/threads-store/messages/provider";
 
-import { Header } from "@/components/layout/header";
-
-const Page = () => (
-  <div className="relative flex flex-1 flex-col">
-    <Header />
-  </div>
-);
-
-export default Page;
+export default function Page() {
+  return (
+    <MessagesProvider>
+      <LayoutApp>
+        <MessageList />
+      </LayoutApp>
+    </MessagesProvider>
+  );
+}

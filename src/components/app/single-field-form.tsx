@@ -1,8 +1,7 @@
-import { Label } from "@radix-ui/react-label";
 import { useForm } from "@tanstack/react-form";
-import { Fragment } from "react/jsx-runtime";
 import z from "zod";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 
 const MIN_VALUE_LENGTH = 1;
@@ -58,11 +57,9 @@ export function SingleFieldForm(props: {
     >
       <form.Field name="value">
         {(field) => (
-          <Fragment>
+          <>
             <div className="flex flex-col gap-4 p-4">
-              <Label className="font-semibold text-lg" htmlFor="username">
-                {props.label}
-              </Label>
+              <Label className="font-semibold text-lg">{props.label}</Label>
               <p className="text-muted-foreground text-sm">
                 {props.description}
               </p>
@@ -99,7 +96,7 @@ export function SingleFieldForm(props: {
                 )}
               </form.Subscribe>
             </div>
-          </Fragment>
+          </>
         )}
       </form.Field>
     </form>

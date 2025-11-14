@@ -1,18 +1,29 @@
 import { ConvexError, v } from "convex/values";
+import { authComponent } from "@/convex/auth";
+import { modes, themes } from "@/convex/schema";
 import { mutation, query } from "./_generated/server";
-import { authComponent } from "./auth";
-import { modes, themes } from "./schema";
 
 /**
  * Retrieves the user's settings with authorization checks.
  *
- * @returns The user's settings or null if not found
+ * @returns The user's settings
  * @throws {ConvexError} 401 if user not found/not authenticated
  */
 export const get = query({
-  args: {},
+  returns: v.union(
+    v.object({
+      mode: modes,
+      theme: themes,
+      nickname: v.optional(v.string()),
+      biography: v.optional(v.string()),
+      instructions: v.optional(v.string()),
+      modelId: v.string(),
+      pinnedModels: v.array(v.string()),
+    }),
+    v.null()
+  ),
   handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx);
+    const user = await authComponent.getAuthUser(ctx).catch(() => null);
 
     if (!user) {
       return null;
@@ -26,16 +37,31 @@ export const get = query({
     if (!settings) {
       throw new ConvexError({
         code: 404,
-        message:
-          "Settings not found. There should always be settings for a user.",
+        message: "Settings not found. (This should never happen.)",
         severity: "high",
       });
     }
 
-    return settings;
+    return {
+      mode: settings.mode,
+      theme: settings.theme,
+      nickname: settings.nickname,
+      biography: settings.biography,
+      instructions: settings.instructions,
+      modelId: settings.modelId,
+      pinnedModels: settings.pinnedModels,
+    };
   },
 });
 
+/**
+ * Updates the user's settings.
+ *
+ * @param args - The settings to update
+ * @returns The updated settings
+ * @throws {ConvexError} 401 if user not found/not authenticated
+ * @throws {ConvexError} 404 if settings not found
+ */
 export const update = mutation({
   args: {
     mode: v.optional(modes),

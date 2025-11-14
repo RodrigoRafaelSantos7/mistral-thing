@@ -9,6 +9,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,24 +20,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SITE_CONFIG } from "@/config/site";
-import { useAuth } from "@/hooks/use-auth";
-import { useUser } from "@/hooks/use-database";
-import { getUsername } from "@/lib/usernames";
+import { authClient } from "@/lib/auth-client";
+import { GITHUB_URL } from "@/lib/config";
+import { useUser } from "@/lib/user-store/provider";
 import {
   accountAppearancePath,
   accountModelsPath,
   accountPath,
   accountPreferencesPath,
+  loginPath,
 } from "@/paths";
 
-export function UserMenu() {
-  const user = useUser();
-  const { handleSignOut } = useAuth();
+const UserMenu = () => {
+  const { user } = useUser();
+  const router = useRouter();
 
   if (!user) {
-    return <Skeleton className="size-9" />;
+    return null;
   }
 
   return (
@@ -49,10 +49,7 @@ export function UserMenu() {
               src={user.image ?? undefined}
             />
             <AvatarFallback className="rounded-none">
-              {getUsername({
-                id: user._id,
-                name: user.name,
-              }).charAt(0)}
+              {user.email?.charAt(0)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -64,7 +61,7 @@ export function UserMenu() {
         <DropdownMenuLabel className="flex items-center gap-2">
           <div className="flex flex-col overflow-hidden">
             <div className="truncate text-sm">
-              {getUsername({ id: user._id, name: user.name })}
+              {user.name ? user.name : user.email}
             </div>
             <div className="truncate text-muted-foreground text-xs">
               {user.email}
@@ -98,21 +95,23 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link
-            href={SITE_CONFIG.links.github}
-            rel="noreferrer"
-            target="_blank"
-          >
+          <Link href={GITHUB_URL} rel="noreferrer" target="_blank">
             <GithubIcon className="size-4" />
             GitHub
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem
+          onClick={async () =>
+            await authClient.signOut().then(() => router.push(loginPath()))
+          }
+        >
           <LogOutIcon className="size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
+
+export { UserMenu };

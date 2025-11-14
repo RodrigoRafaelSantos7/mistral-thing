@@ -23,24 +23,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { THEMES } from "@/config/themes";
-import { useSettings } from "@/hooks/use-database";
+import { THEMES } from "@/lib/config";
+import { useUserSettings } from "@/lib/user-settings-store/provider";
 import { cn } from "@/lib/utils";
 
-export function ThemeSelector() {
+const ThemeSelector = () => {
   const [open, setOpen] = useState(false);
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings } = useUserSettings();
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    if (settings) {
-      setTheme(`${settings.theme}-${settings.mode}`);
-    }
-  }, [settings, setTheme]);
-
-  if (!settings) {
-    return null;
-  }
+    setTheme(`${settings.theme}-${settings.mode}`);
+  }, [settings.theme, settings.mode, setTheme]);
 
   const mode = settings.mode ?? "dark";
   const currentTheme = settings.theme ?? "default";
@@ -158,4 +152,6 @@ export function ThemeSelector() {
       </TooltipContent>
     </Tooltip>
   );
-}
+};
+
+export { ThemeSelector };

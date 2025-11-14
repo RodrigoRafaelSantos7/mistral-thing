@@ -1,40 +1,25 @@
-import { query } from "./_generated/server";
-import { authComponent, createAuth } from "./auth";
+import { query } from "@/convex/_generated/server";
+import { authComponent } from "@/convex/auth";
 
 /**
- * Retrieves the current authenticated user's session.
+ * Retrieves the user's information with authorization checks.
  *
- * @returns The current session or null if not authenticated
+ * @returns The user's information
+ * @throws {ConvexError} 401 if user not found/not authenticated
  */
-export const getSession = query({
+export const get = query({
   handler: async (ctx) => {
-    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-    try {
-      const session = await auth.api.getSession({
-        headers,
-      });
-      return session;
-    } catch {
+    const user = await authComponent.getAuthUser(ctx).catch(() => null);
+
+    if (!user) {
       return null;
     }
-  },
-});
 
-/**
- * Retrieves all active sessions for the current authenticated user.
- *
- * @returns Array of all user sessions
- */
-export const getAllSessions = query({
-  handler: async (ctx) => {
-    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-    try {
-      const sessions = await auth.api.listSessions({
-        headers,
-      });
-      return sessions;
-    } catch {
-      return [];
-    }
+    return {
+      id: user._id as string,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    };
   },
 });

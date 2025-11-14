@@ -7,33 +7,14 @@ import { convex } from "@convex-dev/better-auth/plugins";
 import { requireActionCtx } from "@convex-dev/better-auth/utils";
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
-import { ConvexError } from "convex/values";
+import { query } from "@/convex/_generated/server";
+import { sendMagicLink } from "@/convex/email/email";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
-import { sendMagicLink } from "./emails";
 
-const siteUrl = process.env.SITE_URL
-  ? process.env.SITE_URL
-  : "http://localhost:3000";
+const siteUrl = process.env.SITE_URL as string;
 
 const authFunctions: AuthFunctions = internal.auth;
-
-/**
- * Gets a required environment variable, throwing a clear error if missing.
- * This ensures fail-fast behavior with descriptive error messages.
- */
-function getRequiredEnvVar(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new ConvexError({
-      code: 500,
-      message: `Missing required environment variable: ${name}. Please set ${name} in your environment configuration.`,
-      severity: "high",
-    });
-  }
-  return value;
-}
 
 export const authComponent = createClient<DataModel>(components.betterAuth, {
   authFunctions,
@@ -46,20 +27,21 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
           .unique();
 
         if (settings) {
+          console.log("Settings already exists for user:", doc._id);
           return;
         }
 
+        console.log("Creating settings for user:", doc._id);
         await ctx.db.insert("settings", {
           userId: doc._id,
           mode: "dark",
           theme: "default",
           modelId: "mistral-small-latest",
-          pinnedModels: [
-            "mistral-medium-latest",
-            "codestral-latest",
-            "mistral-small-latest",
-          ],
+          pinnedModels: ["magistral-small-latest", "mistral-small-latest"],
         });
+      },
+      onUpdate: async (_ctx, _newDoc, _oldDoc) => {
+        await console.log("Updating settings for user:", _newDoc._id);
       },
       onDelete: async (ctx, doc) => {
         const settings = await ctx.db
@@ -68,6 +50,7 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
           .unique();
 
         if (settings) {
+          console.log("Deleting settings for user:", doc._id);
           await ctx.db.delete(settings._id);
         }
       },
@@ -83,16 +66,25 @@ export const createAuth = (
     logger: {
       disabled: optionsOnly,
     },
+    trustedOrigins: [
+      "https://mistral-thing.xyz",
+      "https://www.mistral-thing.xyz",
+      "http://localhost:3000",
+    ],
+    session: {
+      expiresIn: 60 * 60 * 24 * 365,
+      updateAge: 60 * 60 * 24,
+    },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
     socialProviders: {
       github: {
-        clientId: getRequiredEnvVar("GITHUB_CLIENT_ID"),
-        clientSecret: getRequiredEnvVar("GITHUB_CLIENT_SECRET"),
+        clientId: process.env.GITHUB_CLIENT_ID as string,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       },
       google: {
-        clientId: getRequiredEnvVar("GOOGLE_CLIENT_ID"),
-        clientSecret: getRequiredEnvVar("GOOGLE_CLIENT_SECRET"),
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         accessType: "offline",
         prompt: "select_account consent",
       },
@@ -110,8 +102,54 @@ export const createAuth = (
     ],
   });
 
+/**
+ * Retrieves the current authenticated user.
+ *
+ * @returns The current user or null if not authenticated
+ */
 export const getCurrentUser = query({
   handler: async (ctx) => authComponent.getAuthUser(ctx),
+});
+
+/**
+ * Retrieves the current authenticated user's session.
+ *
+ * @returns The current session or null if not authenticated
+ */
+export const getSession = query({
+  handler: async (ctx) => {
+    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+    try {
+      const session = await auth.api.getSession({
+        headers,
+      });
+      return session;
+    } catch (error) {
+      console.error("Error getting session:", error);
+      return null;
+    }
+  },
+});
+
+/**
+ * Lists the current authenticated user's sessions.
+ *
+ * @returns The current user's sessions or an empty array if not authenticated
+ */
+export const listSessions = query({
+  handler: async (ctx) => {
+    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
+
+    try {
+      const sessions = await auth.api.listSessions({
+        headers,
+      });
+      return sessions;
+    } catch (error) {
+      console.error("Error listing sessions:", error);
+      return [];
+    }
+  },
 });
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();

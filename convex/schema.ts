@@ -13,13 +13,7 @@ export const themes = v.union(
 
 export const modes = v.union(v.literal("light"), v.literal("dark"));
 
-export const threadStatus = v.union(
-  v.literal("ready"),
-  v.literal("streaming"),
-  v.literal("submitted")
-);
-
-const schema = defineSchema({
+export default defineSchema({
   settings: defineTable({
     userId: v.string(),
     mode: modes,
@@ -27,13 +21,13 @@ const schema = defineSchema({
     nickname: v.optional(v.string()),
     biography: v.optional(v.string()),
     instructions: v.optional(v.string()),
-    modelId: v.string(),
-    pinnedModels: v.array(v.string()),
+    modelId: v.string(), // The current model selected by the user
+    pinnedModels: v.array(v.string()), // The models pinned by the user
   }).index("by_userId", ["userId"]),
   model: defineTable({
     modelId: v.string(),
-    name: v.union(v.string(), v.null()),
-    description: v.union(v.string(), v.null()),
+    name: v.string(),
+    description: v.string(),
     capabilities: v.object({
       completionChat: v.optional(v.boolean()),
       completionFim: v.optional(v.boolean()),
@@ -43,5 +37,25 @@ const schema = defineSchema({
       classification: v.optional(v.boolean()),
     }),
   }).index("by_modelId", ["modelId"]),
+  thread: defineTable({
+    userId: v.string(),
+    slug: v.string(),
+    title: v.optional(v.string()),
+    status: v.union(
+      v.literal("ready"),
+      v.literal("streaming"),
+      v.literal("submitted")
+    ),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_slug", ["slug"]),
+  messages: defineTable({
+    threadId: v.id("thread"),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    streamId: v.optional(v.string()),
+    isStreaming: v.optional(v.boolean()),
+    streamingComplete: v.optional(v.boolean()),
+  }).index("by_thread", ["threadId"]),
 });
-export default schema;

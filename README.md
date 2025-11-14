@@ -1,8 +1,8 @@
 <div align="center">
-  <a href="https://github.com/RodrigoRafaelSantos7/MistralThing">
+  <a href="https://mistreal-thing.xyz">
     <img src="public/icon-white.svg" alt="Logo" width="30%">
   </a>
-
+  
   <h3 align="center">Mistral Thing</h3>
 
   <p align="center">
@@ -26,20 +26,12 @@ Mistral Thing is a sleek and modern AI chat application. It allows you to intera
   <img src="public/screenshot.png" alt="Screenshot" width="100%">
 </div>
 
-## Key Features
-
-- **Resumable Streams**: Continue generating responses even after a page refresh.
-- **Fast Navigation**: Quickly switch between different chat sessions.
-- **Search Tool**: Integrated search functionality. Using [Exa](https://www.exa.ai/)
-- **Research Tool**: Perform research within the chat interface.
-- **Theming**: Multiple themes to customize the look and feel.
-
 ## Built With
 
 This project is built with:
 
 - [Next.JS](https://nextjs.org/)
-- [Zero](https://zero.rocicorp.dev/)
+- [Convex](https://convex.dev/)
 - [Mistral AI SDK](https://docs.mistral.ai/getting-started/clients)
 - [React](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
