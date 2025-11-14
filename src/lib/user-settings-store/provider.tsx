@@ -11,6 +11,7 @@ type UserSettingsContextType = {
    * The Settings for the current user
    */
   settings: UserSettings;
+
   /**
    * Update the settings for the current user with optimistic updates
    *
@@ -43,9 +44,7 @@ export function UserSettingsProvider({
    */
   const settingsQueryResult = usePreloadedQuery(initialSettings);
 
-  /**
-   * This is for fallback if the settings are not found in the database
-   */
+  // This is for fallback if the settings are not found in the database
   const settings = settingsQueryResult ?? defaultSettings;
 
   /**

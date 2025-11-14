@@ -17,7 +17,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
   const token = await getToken();
 
   if (!token) {
-    redirect(loginPath());
+    return redirect(loginPath());
   }
 
   const [initialSettings] = await Promise.all([
