@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth/auth-server";
+import { ModelsProvider } from "@/lib/models-store/provider";
 import { loginPath } from "@/lib/paths";
 import { UserSettingsProvider } from "@/lib/user-settings-store/provider";
 
@@ -20,13 +21,14 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
     return redirect(loginPath());
   }
 
-  const [initialSettings] = await Promise.all([
+  const [initialSettings, initialModels] = await Promise.all([
     preloadQuery(api.settings.get, {}, { token }),
+    preloadQuery(api.models.list, {}, { token }),
   ]);
 
   return (
     <UserSettingsProvider initialSettings={initialSettings}>
-      {children}
+      <ModelsProvider initialModels={initialModels}>{children}</ModelsProvider>
     </UserSettingsProvider>
   );
 };
