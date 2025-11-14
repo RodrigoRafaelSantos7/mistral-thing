@@ -9,7 +9,7 @@ import { themes } from "@/lib/themes";
 import { useUserSettings } from "@/lib/user-settings-store/provider";
 import { cn } from "@/lib/utils";
 
-const Page = () => {
+const AppearancePage = () => {
   const { settings, updateSettings } = useUserSettings();
   const { setTheme } = useTheme();
 
@@ -147,4 +147,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default AppearancePage;

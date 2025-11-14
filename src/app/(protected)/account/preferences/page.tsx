@@ -15,7 +15,7 @@ import {
 } from "@/lib/schemas/preferences";
 import { useUserSettings } from "@/lib/user-settings-store/provider";
 
-const Page = () => {
+const PreferencesPage = () => {
   const { settings, updateSettings } = useUserSettings();
   return (
     <div className="flex flex-col gap-8">
@@ -87,4 +87,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default PreferencesPage;

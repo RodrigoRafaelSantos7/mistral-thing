@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { defaultSingleFieldSchema } from "@/lib/schemas/default";
 
+type SingleFieldSchema = z.ZodObject<{ value: z.ZodString }>;
+
 type SingleFieldFormProps = {
   label: string;
   description: string;
   defaultValue: string;
   footerMessage?: string;
-  schema?: z.ZodSchema<{ value: string }>;
+  schema?: SingleFieldSchema;
   renderInput: (props: {
     onChange: (value: string) => void;
     value: string;
@@ -36,8 +38,7 @@ type SingleFieldFormProps = {
 export function SingleFieldForm(props: SingleFieldFormProps) {
   const [isPending, startTransition] = useTransition();
 
-  const schema = (props.schema ??
-    defaultSingleFieldSchema) as typeof defaultSingleFieldSchema;
+  const schema = props.schema ?? defaultSingleFieldSchema;
 
   const form = useForm({
     defaultValues: {
