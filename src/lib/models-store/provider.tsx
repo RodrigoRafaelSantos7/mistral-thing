@@ -6,7 +6,7 @@ import type { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 
 // The type of a model document in the database.
-type ModelType = Doc<"model">;
+export type ModelType = Doc<"model">;
 
 type ModelsContextType = {
   /**

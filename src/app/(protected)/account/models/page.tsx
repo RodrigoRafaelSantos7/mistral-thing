@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { CapabilityBadges } from "@/components/capability-badge";
 import ModelIconComponent from "@/components/model-icon";
 import { Section } from "@/components/ui/section";
 import { Switch } from "@/components/ui/switch";
@@ -80,7 +81,9 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-3 bg-sidebar p-4" />
+              <div className="flex items-center justify-between gap-3 bg-sidebar p-4">
+                <CapabilityBadges capabilities={model.capabilities} />
+              </div>
             </div>
           ))}
         </div>
