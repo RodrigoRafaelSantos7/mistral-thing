@@ -67,7 +67,7 @@ export const update = mutation({
     instructions: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx);
+    const user = await authComponent.getAuthUser(ctx).catch(() => null);
 
     if (!user) {
       throw new ConvexError({
