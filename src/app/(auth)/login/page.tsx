@@ -20,7 +20,6 @@ const schema = z.object({
 
 const LoginPage = () => {
   const [isPending, startTransition] = useTransition();
-
   const router = useRouter();
 
   const form = useForm({

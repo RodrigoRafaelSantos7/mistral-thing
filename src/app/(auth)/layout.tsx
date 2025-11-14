@@ -4,7 +4,10 @@ import { getToken } from "@/lib/auth/auth-server";
 import { indexPath } from "@/lib/paths";
 
 export const metadata: Metadata = {
-  title: "Welcome Back",
+  title: {
+    default: "Welcome",
+    template: "%s | Mistral Thing",
+  },
   description:
     "Get access to AI models from Mistral. Unlimited tier is free for everyone!",
 };
