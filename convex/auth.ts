@@ -3,9 +3,8 @@ import { convex } from "@convex-dev/better-auth/plugins";
 import { requireActionCtx } from "@convex-dev/better-auth/utils";
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { sendMagicLink } from "./email";
 
 const siteUrl = process.env.SITE_URL as string;
 
@@ -25,7 +24,7 @@ export const createAuth = (
       "http://localhost:3000",
     ],
     session: {
-      expiresIn: 60 * 60 * 24 * 365,
+      expiresIn: 60 * 60 * 24 * 7,
       updateAge: 60 * 60 * 24,
     },
     baseURL: siteUrl,
@@ -46,7 +45,7 @@ export const createAuth = (
       convex(),
       magicLink({
         sendMagicLink: async ({ email, url }) => {
-          await sendMagicLink(requireActionCtx(ctx), {
+          await requireActionCtx(ctx).runAction(internal.email.sendMagicLink, {
             to: email,
             url,
           });

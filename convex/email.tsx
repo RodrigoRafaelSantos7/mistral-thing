@@ -1,3 +1,5 @@
+"use node";
+
 import { Resend } from "@convex-dev/resend";
 import {
   Body,
@@ -15,8 +17,9 @@ import {
   Text,
 } from "@react-email/components";
 import { pretty, render } from "@react-email/render";
+import { v } from "convex/values";
 import { components } from "./_generated/api";
-import type { ActionCtx } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 
 type MagicLinkEmailProps = {
   magicLink: string;
@@ -25,27 +28,24 @@ export const resend = new Resend(components.resend, {
   testMode: false,
 });
 
-export const sendMagicLink = async (
-  ctx: ActionCtx,
-  {
-    to,
-    url,
-  }: {
-    to: string;
-    url: string;
-  }
-) => {
-  const MagicLinkEmailHtml = await pretty(
-    await render(<MagicLinkEmail magicLink={url} />)
-  );
+export const sendMagicLink = internalAction({
+  args: {
+    to: v.string(),
+    url: v.string(),
+  },
+  handler: async (ctx, { to, url }) => {
+    const MagicLinkEmailHtml = await pretty(
+      await render(<MagicLinkEmail magicLink={url} />)
+    );
 
-  return await resend.sendEmail(ctx, {
-    from: "Mistral Thing <no-reply@mistral-thing.xyz>",
-    to,
-    subject: "Your Magic Link for Mistral Thing",
-    html: MagicLinkEmailHtml,
-  });
-};
+    return await resend.sendEmail(ctx, {
+      from: "Mistral Thing <no-reply@mistral-thing.xyz>",
+      to,
+      subject: "Your Magic Link for Mistral Thing",
+      html: MagicLinkEmailHtml,
+    });
+  },
+});
 
 export const MagicLinkEmail = ({ magicLink }: MagicLinkEmailProps) => (
   <Html>
